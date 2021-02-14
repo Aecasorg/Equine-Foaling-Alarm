@@ -13,6 +13,17 @@ This project was inspired by: https://create.arduino.cc/projecthub/pittex/foalin
 
 Arduino MKR GSM 1400 was used for this project.
 
+Foal Alarm in Action:
+![](FoalAlarmInAction.MOV)
+
+Arduino Board in container:
+![](FoalAlarmOpem.jpeg)
+
+Foal Alarm mounted on headcollar:
+![](FoalAlarmonHeadcollar.jpeg)
+
+Foal born with help of Foal Alarm:
+![](FoalAlarmMotherAndFoal.jpeg)
 
 
 # Product Name
