@@ -13,7 +13,7 @@ This project was inspired by: https://create.arduino.cc/projecthub/pittex/foalin
 
 Arduino MKR GSM 1400 was used for this project.
 
-Only the sourcecode has been put on here, as short a explanation of the project which was worked on summer 2020. 
+Only the source code has been put on here, with short a explanation of the project which was worked on summer 2020.
 
 Foal Alarm in Action (links to YouTube): 
 [![Foal Alarm Prototype](https://img.youtube.com/vi/L1dmDUY_KUk/0.jpg)](https://www.youtube.com/watch?v=L1dmDUY_KUk)
