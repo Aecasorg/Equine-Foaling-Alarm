@@ -5,7 +5,7 @@ Using a GSM enabled Lithium-Ion powered Arduino board to monitor tilt.
 
 The principle is simple. 
 
-The device is attached to the headcollar of the mare in foal and when the mare lies down on her side, the device senses this and after 15, 30 and 60 seconds sends out an SMS to a hard coded phone number, alerting that the tilt sensor has been tripped. 
+The device is attached to the headcollar of the mare in foal and when the mare lies down on her side (which is normally one of the few times a horse lies on its side), the device senses this and after 15, 30 and 60 seconds sends out an SMS to a hard coded phone number, alerting that the tilt sensor has been tripped. 
 
 False positives can happen, however this is common with most other systems and is preferable to the alternative.
 
