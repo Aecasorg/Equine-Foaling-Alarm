@@ -9,6 +9,12 @@ The device is attached to the headcollar of the mare in foal and when the mare l
 
 False positives can happen, however this is common with most other systems and is preferable to the alternative.
 
+This project was inspired by: https://create.arduino.cc/projecthub/pittex/foaling-monitor-139532
+
+Arduino MKR GSM 1400 was used for this project.
+
+
+
 # Product Name
 > Short blurb about what your product does.
 
