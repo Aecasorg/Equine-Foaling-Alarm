@@ -7,9 +7,8 @@ GSM_SMS sms;
 
 // Foal alarm constants
 const uint8_t sensorSwitchPIN = 1;
-const String payload = "FOALING ALARM!";
-const char numberToSMS = "+447535900976‬";
-const uint8_t debug = false;
+char payload[20] = "FOALING ALARM!";
+char numberToSMS[20] = "00447535900976";
 int Count = 0; // Timer
 boolean notConnected = true;
 
@@ -51,19 +50,12 @@ void blinkSignal() {
 }
 
 void sendSMS() {
-//    char remoteNumber[numberToSMS.length() + 1];
-//    numberToSMS.toCharArray(remoteNumber, numberToSMS.length() + 1);
-    
-    char txtMsg[payload.length() + 1];
-    payload.toCharArray(txtMsg, payload.length() + 1);
-    
     sms.beginSMS(numberToSMS);
-    sms.print(txtMsg);
+    sms.print(payload);
     sms.endSMS();
 }
 
 void setup() {
-  
   gsmSetup();
 
   pinMode(sensorSwitchPIN, INPUT);
