@@ -1,0 +1,57 @@
+<svg width="680" height="420" viewBox="0 0 680 420" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+<title>Update 3 wiring: external USB-C charge socket into the 5V pin</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#5f5e5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect x="0" y="0" width="680" height="420" fill="#ffffff"/>
+<text x="40" y="28" font-size="15" font-weight="bold" fill="#1a1a1a">Update 3 — external charge socket soldered to the 5V pin</text>
+
+<rect x="40" y="90" width="150" height="70" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+<text x="115" y="118" font-size="12" font-weight="bold" text-anchor="middle" fill="#0C447C">USB-C socket</text>
+<text x="115" y="136" font-size="11" text-anchor="middle" fill="#185FA5">2-pin waterproof</text>
+<text x="115" y="150" font-size="11" text-anchor="middle" fill="#185FA5">panel mount</text>
+
+<path d="M190 106 H270" fill="none" stroke="#E24B4A" stroke-width="2"/>
+<text x="230" y="100" font-size="11" text-anchor="middle" fill="#A32D2D">+</text>
+<path d="M190 144 H240 V196 H270" fill="none" stroke="#5f5e5a" stroke-width="2"/>
+<text x="230" y="138" font-size="11" text-anchor="middle" fill="#444441">&#8722;</text>
+
+<rect x="250" y="60" width="390" height="230" rx="6" fill="none" stroke="#8a8880" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="262" y="80" font-size="11" fill="#5f5e5a">inside the MKR GSM 1400</text>
+
+<rect x="270" y="92" width="76" height="28" rx="4" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1"/>
+<text x="308" y="110" font-size="12" font-weight="bold" text-anchor="middle" fill="#791F1F">5V pin</text>
+<rect x="270" y="182" width="76" height="28" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="308" y="200" font-size="12" font-weight="bold" text-anchor="middle" fill="#444441">GND pin</text>
+
+<path d="M346 106 H388" fill="none" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="392" y="88" width="100" height="36" rx="4" fill="#f7f6f1" stroke="#8a8880" stroke-width="1"/>
+<text x="442" y="103" font-size="12" font-weight="bold" text-anchor="middle" fill="#1a1a1a">F1 polyfuse</text>
+<text x="442" y="118" font-size="11" text-anchor="middle" fill="#5f5e5a">0.5 A</text>
+
+<path d="M492 106 H530" fill="none" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="534" y="88" width="92" height="36" rx="4" fill="#f7f6f1" stroke="#8a8880" stroke-width="1"/>
+<text x="580" y="103" font-size="12" font-weight="bold" text-anchor="middle" fill="#1a1a1a">+5V net</text>
+<text x="580" y="118" font-size="11" text-anchor="middle" fill="#5f5e5a">= USB VBUS</text>
+
+<path d="M580 124 V148" fill="none" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="534" y="152" width="92" height="36" rx="4" fill="#f7f6f1" stroke="#8a8880" stroke-width="1"/>
+<text x="580" y="167" font-size="12" font-weight="bold" text-anchor="middle" fill="#1a1a1a">D3 diode</text>
+<text x="580" y="182" font-size="11" text-anchor="middle" fill="#5f5e5a">reverse protect</text>
+
+<path d="M534 170 H470" fill="none" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="356" y="152" width="110" height="36" rx="4" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+<text x="411" y="167" font-size="12" font-weight="bold" text-anchor="middle" fill="#085041">BQ24195L</text>
+<text x="411" y="182" font-size="11" text-anchor="middle" fill="#0F6E56">battery charger</text>
+
+<path d="M411 188 V216" fill="none" stroke="#5f5e5a" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="356" y="220" width="110" height="32" rx="4" fill="#FAEEDA" stroke="#854F0B" stroke-width="1"/>
+<text x="411" y="240" font-size="12" font-weight="bold" text-anchor="middle" fill="#633806">LiPo 2500 mAh</text>
+
+<text x="262" y="266" font-size="11" fill="#3B6D11">green LED = charger present &#183; orange LED = charging (off = full)</text>
+<text x="262" y="282" font-size="11" fill="#5f5e5a">exactly the same charge path as plugging into the USB socket</text>
+
+<rect x="40" y="316" width="600" height="90" rx="6" fill="#FAEEDA" stroke="#854F0B" stroke-width="1"/>
+<text x="56" y="338" font-size="11" fill="#633806">1. Meter the socket wires for polarity before first connection - reversed polarity is unrecoverable.</text>
+<text x="56" y="355" font-size="11" fill="#633806">2. USB-A charger + A-to-C cable only (2-pin socket has no CC resistors, C-to-C chargers give 0 V).</text>
+<text x="56" y="372" font-size="11" fill="#633806">3. On/off switch ON while charging.  4. Never feed internal USB + external socket at the same time.</text>
+<text x="56" y="389" font-size="11" fill="#633806">Charge input is capped at ~500 mA by the board &#8594; a full 2500 mAh charge takes &#8776; 5-6 h.</text>
+</svg>

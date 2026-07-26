@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Local secrets (SIM PIN, alert phone number) - copy arduino_secrets.h.example
+arduino_secrets.h
+
+# Large local media kept out of the repo
+*.MOV

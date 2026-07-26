@@ -1,0 +1,97 @@
+<svg width="680" height="520" viewBox="0 0 680 520" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+<title>Updates 1+2 wiring: MPU-6050 and battery divider</title>
+<rect x="0" y="0" width="680" height="520" fill="#ffffff"/>
+<text x="40" y="28" font-size="15" font-weight="bold" fill="#1a1a1a">Updates 1 + 2 — MPU-6050 (GY-521) + battery divider wiring</text>
+
+<rect x="258" y="84" width="54" height="16" rx="3" fill="#e8e6df" stroke="#8a8880" stroke-width="0.75"/>
+<text x="285" y="96" font-size="11" text-anchor="middle" fill="#5f5e5a">USB</text>
+<rect x="325" y="84" width="54" height="16" rx="3" fill="#e8e6df" stroke="#8a8880" stroke-width="0.75"/>
+<text x="352" y="96" font-size="11" text-anchor="middle" fill="#5f5e5a">BATT</text>
+
+<rect x="200" y="100" width="170" height="215" rx="6" fill="#f7f6f1" stroke="#8a8880" stroke-width="1"/>
+<text x="285" y="138" font-size="13" font-weight="bold" text-anchor="middle" fill="#1a1a1a">MKR</text>
+<text x="285" y="156" font-size="13" font-weight="bold" text-anchor="middle" fill="#1a1a1a">GSM 1400</text>
+
+<text x="362" y="129" font-size="11" text-anchor="end" fill="#9a9890">5V</text>
+<text x="362" y="151" font-size="11" text-anchor="end" fill="#9a9890">VIN</text>
+<text x="362" y="173" font-size="12" font-weight="bold" text-anchor="end" fill="#1a1a1a">VCC</text>
+<text x="362" y="195" font-size="12" font-weight="bold" text-anchor="end" fill="#1a1a1a">GND</text>
+<text x="362" y="217" font-size="11" text-anchor="end" fill="#9a9890">RESET</text>
+<text x="362" y="239" font-size="11" text-anchor="end" fill="#9a9890">14 TX</text>
+<text x="362" y="261" font-size="11" text-anchor="end" fill="#9a9890">13 RX</text>
+<text x="362" y="283" font-size="12" font-weight="bold" text-anchor="end" fill="#1a1a1a">12 SCL</text>
+<text x="362" y="305" font-size="12" font-weight="bold" text-anchor="end" fill="#1a1a1a">11 SDA</text>
+<circle cx="370" cy="125" r="3.5" fill="#b4b2a9"/>
+<circle cx="370" cy="147" r="3.5" fill="#b4b2a9"/>
+<circle cx="370" cy="169" r="3.5" fill="#E24B4A"/>
+<circle cx="370" cy="191" r="3.5" fill="#5f5e5a"/>
+<circle cx="370" cy="213" r="3.5" fill="#b4b2a9"/>
+<circle cx="370" cy="235" r="3.5" fill="#b4b2a9"/>
+<circle cx="370" cy="257" r="3.5" fill="#b4b2a9"/>
+<circle cx="370" cy="279" r="3.5" fill="#EF9F27"/>
+<circle cx="370" cy="301" r="3.5" fill="#378ADD"/>
+
+<text x="208" y="129" font-size="11" fill="#9a9890">AREF</text>
+<text x="208" y="151" font-size="11" fill="#9a9890">A0</text>
+<text x="208" y="173" font-size="12" font-weight="bold" fill="#1a1a1a">A1</text>
+<text x="208" y="195" font-size="11" fill="#9a9890">A2</text>
+<text x="208" y="217" font-size="11" fill="#9a9890">A3</text>
+<text x="208" y="241" font-size="11" fill="#9a9890">&#8230;</text>
+<circle cx="200" cy="125" r="3.5" fill="#b4b2a9"/>
+<circle cx="200" cy="147" r="3.5" fill="#b4b2a9"/>
+<circle cx="200" cy="169" r="3.5" fill="#1D9E75"/>
+<circle cx="200" cy="191" r="3.5" fill="#b4b2a9"/>
+<circle cx="200" cy="213" r="3.5" fill="#b4b2a9"/>
+
+<rect x="480" y="140" width="150" height="210" rx="6" fill="#f7f6f1" stroke="#8a8880" stroke-width="1"/>
+<text x="555" y="162" font-size="12" font-weight="bold" text-anchor="middle" fill="#1a1a1a">GY-521 (MPU-6050)</text>
+<text x="492" y="184" font-size="12" font-weight="bold" fill="#1a1a1a">VCC</text>
+<text x="492" y="206" font-size="12" font-weight="bold" fill="#1a1a1a">GND</text>
+<text x="492" y="228" font-size="12" font-weight="bold" fill="#1a1a1a">SCL</text>
+<text x="492" y="250" font-size="12" font-weight="bold" fill="#1a1a1a">SDA</text>
+<text x="492" y="272" font-size="11" fill="#9a9890">XDA (n/c)</text>
+<text x="492" y="294" font-size="11" fill="#9a9890">XCL (n/c)</text>
+<text x="492" y="316" font-size="11" fill="#9a9890">AD0 (n/c)</text>
+<text x="492" y="338" font-size="11" fill="#9a9890">INT (n/c)</text>
+<circle cx="480" cy="180" r="3.5" fill="#E24B4A"/>
+<circle cx="480" cy="202" r="3.5" fill="#5f5e5a"/>
+<circle cx="480" cy="224" r="3.5" fill="#EF9F27"/>
+<circle cx="480" cy="246" r="3.5" fill="#378ADD"/>
+<circle cx="480" cy="268" r="3.5" fill="#b4b2a9"/>
+<circle cx="480" cy="290" r="3.5" fill="#b4b2a9"/>
+<circle cx="480" cy="312" r="3.5" fill="#b4b2a9"/>
+<circle cx="480" cy="334" r="3.5" fill="#b4b2a9"/>
+
+<path d="M374 169 H420 V180 H476" fill="none" stroke="#E24B4A" stroke-width="2"/>
+<path d="M374 191 H432 V202 H476" fill="none" stroke="#5f5e5a" stroke-width="2"/>
+<path d="M374 279 H444 V224 H476" fill="none" stroke="#EF9F27" stroke-width="2"/>
+<path d="M374 301 H458 V246 H476" fill="none" stroke="#378ADD" stroke-width="2"/>
+
+<rect x="50" y="408" width="150" height="44" rx="4" fill="#FCEBEB" stroke="#A32D2D" stroke-width="1"/>
+<text x="125" y="426" font-size="12" font-weight="bold" text-anchor="middle" fill="#791F1F">Battery +</text>
+<text x="125" y="443" font-size="11" text-anchor="middle" fill="#A32D2D">JST side of switch</text>
+<path d="M200 430 H225" fill="none" stroke="#E24B4A" stroke-width="2"/>
+<rect x="225" y="416" width="68" height="28" rx="4" fill="#f7f6f1" stroke="#8a8880" stroke-width="1"/>
+<text x="259" y="434" font-size="12" font-weight="bold" text-anchor="middle" fill="#1a1a1a">100 k&#937;</text>
+<path d="M293 430 H316" fill="none" stroke="#5f5e5a" stroke-width="2"/>
+<circle cx="320" cy="430" r="4" fill="#1D9E75"/>
+<path d="M324 430 H345" fill="none" stroke="#5f5e5a" stroke-width="2"/>
+<rect x="345" y="416" width="68" height="28" rx="4" fill="#f7f6f1" stroke="#8a8880" stroke-width="1"/>
+<text x="379" y="434" font-size="12" font-weight="bold" text-anchor="middle" fill="#1a1a1a">100 k&#937;</text>
+<path d="M413 430 H440" fill="none" stroke="#5f5e5a" stroke-width="2"/>
+<rect x="440" y="415" width="58" height="30" rx="4" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="1"/>
+<text x="469" y="434" font-size="12" font-weight="bold" text-anchor="middle" fill="#444441">GND</text>
+
+<path d="M320 424 V360 H165 V169 H196" fill="none" stroke="#1D9E75" stroke-width="2"/>
+
+<line x1="60" y1="485" x2="84" y2="485" stroke="#E24B4A" stroke-width="2"/>
+<text x="90" y="489" font-size="11" fill="#444441">3.3 V power</text>
+<line x1="182" y1="485" x2="206" y2="485" stroke="#5f5e5a" stroke-width="2"/>
+<text x="212" y="489" font-size="11" fill="#444441">ground</text>
+<line x1="280" y1="485" x2="304" y2="485" stroke="#EF9F27" stroke-width="2"/>
+<text x="310" y="489" font-size="11" fill="#444441">SCL clock</text>
+<line x1="392" y1="485" x2="416" y2="485" stroke="#378ADD" stroke-width="2"/>
+<text x="422" y="489" font-size="11" fill="#444441">SDA data</text>
+<line x1="496" y1="485" x2="520" y2="485" stroke="#1D9E75" stroke-width="2"/>
+<text x="526" y="489" font-size="11" fill="#444441">battery sense to A1</text>
+</svg>
