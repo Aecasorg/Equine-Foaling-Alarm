@@ -142,6 +142,11 @@ from empty is ~5–6 h.
 cap on in the field. The socket is a dead input while on the horse — no corrosion
 or short risk.
 
+**Charging routine** (with updates 1–3 all fitted): unclip the box from the
+headcollar → plug into the dedicated USB-A charger in the tack room → clip back on.
+The belt clip removes the tape faff, the socket removes the unscrew-the-lid step;
+charging itself always happens off the horse.
+
 ---
 
 ## Parts list (all three updates)
