@@ -48,13 +48,26 @@ Old tilt switches on D1 can stay soldered; the code no longer reads them.
 | BACKSTOP | flat 25 min even if calm | safety net: missed event or cast mare |
 | EARLY WARNING | ≥3 lie-down episodes in 20 min (3 s debounce) | stage-1 restlessness starting |
 
-**Mounting modes** — set `HANGING_MOUNT` in the sketch:
+**Mounting hardware:** spring belt clips
+([eBay 334736377513](https://www.ebay.co.uk/itm/334736377513), ✅ bought) — the box
+clips onto the headcollar and pops off one-handed for charging, replacing the old
+duct-tape/trigger-clip arrangement. Fit notes: the box must go back in the **same
+position and orientation every time** (the axis calibration assumes it — mark the
+spot), and a small keeper strap/lanyard is a cheap backstop since spring clips can
+work loose on a horse that rubs or rolls.
 
-- `true` (current setup — box dangles from the headcollar on a clip): the box is
+**Mounting modes** — set `HANGING_MOUNT` in the sketch to match how the box
+actually sits once the belt clip is fitted:
+
+- `true` (box dangles freely, as with the old pendant clip): the box is
   self-plumbing, so the axis along the strap reads ~1 g in any upright head position
   and collapses when she lies flat. Detection = hang axis < 0.45 g.
-- `false` (future fixed cheekpiece cradle): side axis picks up gravity when she lies
-  on her side. Detection = side axis > 0.70 g.
+- `false` (box held flat against the cheekpiece — the likely belt-clip geometry):
+  side axis picks up gravity when she lies on her side. Detection = side axis
+  > 0.70 g. This is the more deterministic mode — prefer it if the clip holds the
+  box firmly flat against the strap.
+
+Re-run the axis calibration whenever the mounting arrangement changes.
 
 **Calibration (required before field use):** Serial Monitor @ 9600 prints
 `accX/accY/accZ/axisG/motion/flat` once a second. Hang the box still by its clip —
@@ -139,12 +152,13 @@ or short risk.
 | Resistors | 100 kΩ 1% metal film | 2 | pennies |
 | USB-C panel socket | 2-pin waterproof, screw-in (RUNCCI-YUN) | pack | ~£8–10 |
 | Hook-up wire | thin solid-core | — | ~£2 |
+| Belt clips | spring clip, box-to-headcollar quick release ([eBay 334736377513](https://www.ebay.co.uk/itm/334736377513)) | — | ✅ bought |
 
 ## Parked ideas (not scheduled)
 
 - Charging-status SMS ("plugged in" / "battery full") via the `Arduino_PMIC` library.
-- Quick-release cheekpiece cradle (GoPro-style or Fidlock) → flip `HANGING_MOUNT`
-  to `false` and recalibrate; most deterministic mounting.
+- Rigid GoPro-style or Fidlock cradle — fallback if the belt clips (bought, see
+  update 1 mounting) prove insecure or don't hold a repeatable orientation.
 - Heartbeat at a fixed clock time (RTCZero + network time) instead of ~24 h rolling.
 - MCU sleep + MPU motion-interrupt wake for multi-week battery life.
 - Second complete unit as a hot spare / swap-to-charge.
