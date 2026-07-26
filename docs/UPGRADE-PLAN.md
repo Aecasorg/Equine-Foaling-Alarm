@@ -38,7 +38,16 @@ gyroscope, and replace the single "flat for 30 s" trigger with pattern detection
 | SDA | D11 (SDA) |
 | XDA / XCL / AD0 / INT | not connected (AD0 floating = I²C address 0x68, which the library expects) |
 
-Old tilt switches on D1 can stay soldered; the code no longer reads them.
+**Space-saving tip:** only the first four pins in the GY-521's row (VCC, GND, SCL,
+SDA) are needed — snap the header down to a 4-pin piece, solder just those, and
+leave XDA/XCL/AD0/INT pads empty (AD0 unconnected = address 0x68, which the library
+expects). Dab of hot glue under the unsupported end. On perma-proto board, holes in
+a column strip are connected — so a soldered-in pin "touching" an MKR pin's strip is
+wired to it. Unused GY pins sharing strips with unused MKR pins (~2–~5) is
+tolerable, but keep AD0 off anything that can sit high, and keep everything off the
+D1 strip while the old tilt switches + pull-up are fitted — that strip still swings
+3.3 V/GND as the balls roll. Best: desolder the tilt switches and their pull-up
+(code-dead since the rewrite) — it frees board space too.
 
 **Alarm tiers** (each sends a distinct SMS):
 
