@@ -182,6 +182,20 @@ completion sends `Battery full - foal alarm ready`.
 
 ---
 
+## Before shipping — final checklist
+
+- [ ] **Swap `SECRET_PHONE_NUMBER` in `arduino_secrets.h` back to the real
+      recipient** (testing is being done with Henrik's own number), re-flash,
+      and confirm the boot SMS arrives on the right phone.
+- [ ] Restore any thresholds relaxed for bench testing (`ARM_SECS` 120,
+      `CALM_FLAT_BACKSTOP` 1500).
+- [ ] Full bench pass: ARMED SMS, labour, backstop, restless, charger
+      connect/full/re-arm.
+- [ ] Charge to 100 % (orange LED off, `Battery full` SMS).
+- [ ] Pack the dedicated USB-A charger + A-to-C cable with the device, plus the
+      one-page operator note (fit to a standing horse, wait for the ARMED text,
+      charge daily, heartbeat = it's alive).
+
 ## Parts list (all three updates)
 
 | Part | Spec | Qty | ~Cost |
