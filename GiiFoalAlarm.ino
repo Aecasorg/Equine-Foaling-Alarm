@@ -69,12 +69,20 @@ boolean wasOnCharger   = false; // edge-detect for charger connect/disconnect
 boolean fullAnnounced  = false; // one "battery full" SMS per charge session
 
 void gsmSetup() {
+  int attempt = 0;
   while (notConnected) {
     if (gsmAccess.begin(PINNUMBER) == GSM_READY) {
       notConnected = false;
       blinkSignal();
     } else {
-      delay(1000);
+      attempt++;
+      Serial.print("GSM connect failed, retrying (attempt ");
+      Serial.print(attempt);
+      Serial.println(")");
+      digitalWrite(LED_BUILTIN, HIGH);   // one short flash per failed attempt:
+      delay(80);                         // "retrying" now looks different from "dead"
+      digitalWrite(LED_BUILTIN, LOW);
+      delay(920);
     }
   }
   gsmAccess.lowPowerMode();
