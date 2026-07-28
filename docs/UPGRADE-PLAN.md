@@ -16,7 +16,7 @@ Three updates are planned. Code for 1 + 2 is already merged into
 |---|--------|:----:|:--------:|:----------:|:------------:|
 | 1 | MPU-6050 motion sensor | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
 | 2 | Battery monitoring + heartbeat SMS | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
-| 3 | External charging socket | — (no code) | ✅ 28 Jul 2026 | — | ☐ |
+| 3 | External charging socket | ✅ | ✅ 28 Jul 2026 | — | ☐ |
 
 Hardware fitted 28 Jul 2026: GY-521 soldered in (its four unused pins INT/AD0/XCL/XDA
 are parked on strips shared with unused MKR digital pins — **treat those digital pins
@@ -117,6 +117,8 @@ Same diagram as update 1. Drain ~20 µA, negligible.
 | `Foal alarm online. Batt 87% (3.95V)` | every power-on (doubles as install check) |
 | `Foal alarm OK. Batt 78% (3.90V)` | daily heartbeat (~24 h); a *missing* heartbeat means the unit is dead/flat/out of signal |
 | `LOW BATTERY 3.38V - charge foal alarm` | sustained reading < 3.40 V; re-arms after charging past 3.70 V |
+| `Charger connected. Batt 42%` | external 5 V detected — posture alarms suppressed while on charge |
+| `Battery full - foal alarm ready` | charger present and the BQ24195 reports charge complete |
 
 **Calibration:** compare the boot SMS voltage against a multimeter on the battery and
 nudge `DIVIDER_RATIO` (2.0 nominal) until they agree.
@@ -162,6 +164,14 @@ or short risk.
 headcollar → plug into the dedicated USB-A charger in the tack room → clip back on.
 The belt clip removes the tape faff, the socket removes the unscrew-the-lid step;
 charging itself always happens off the horse.
+
+**Firmware charger-awareness:** because the box is powered while charging (switch
+must be ON) and lies flat on a shelf for hours, the sketch reads the BQ24195's
+status register (read-only, shared I²C bus) each second. While external 5 V is
+present the posture alarms are suppressed and their state zeroed — otherwise the
+25-min backstop would text "CHECK MARE" during every charge. Plugging in sends
+`Charger connected. Batt XX%` (proof the socket made contact), and charge
+completion sends `Battery full - foal alarm ready`.
 
 ---
 

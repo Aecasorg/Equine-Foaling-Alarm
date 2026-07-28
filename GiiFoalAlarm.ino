@@ -11,6 +11,7 @@ MPU6050 mpu(Wire);
 
 // ---- Hardware ----
 const uint8_t BATTERY_PIN = A1;   // battery via 2:1 resistor divider (100k / 100k)
+const uint8_t PMIC_I2C_ADDR = 0x6B; // BQ24195 charger chip - shares the I2C bus with the MPU
 char numberToSMS[20] = SECRET_PHONE_NUMBER;
 // (Tilt switches removed - the MPU now detects lying-on-side itself. Old pin D1 is free.)
 
@@ -55,6 +56,8 @@ boolean earlyWarnSent = false;
 long    heartbeatTimer = 0;     // seconds since last heartbeat
 int     lowBattStreak  = 0;     // consecutive low readings (rides out GSM-TX voltage sag)
 boolean lowBattWarned  = false;
+boolean wasOnCharger   = false; // edge-detect for the "charger connected" SMS
+boolean fullAnnounced  = false; // one "battery full" SMS per charge session
 
 void gsmSetup() {
   while (notConnected) {
@@ -107,6 +110,20 @@ int batteryPercent(float v) {
   return (int)((v - 3.30) / (4.20 - 3.30) * 100.0);
 }
 
+// Read the BQ24195's system-status register (0x08). Read-only: no charger
+// configuration is ever written, so charge behaviour stays at the board defaults.
+// Any bus error reports as "no charger", which leaves field behaviour untouched.
+uint8_t pmicStatus() {
+  Wire.beginTransmission(PMIC_I2C_ADDR);
+  Wire.write(0x08);
+  if (Wire.endTransmission(false) != 0) return 0;
+  Wire.requestFrom(PMIC_I2C_ADDR, (uint8_t)1);
+  if (Wire.available() == 0) return 0;
+  return Wire.read();
+}
+boolean onCharger()  { return (pmicStatus() & 0x04) != 0; }    // PG_STAT: external 5V present
+boolean chargeDone() { return (pmicStatus() & 0x30) == 0x30; } // CHRG_STAT 11 = charge complete
+
 // Sample the IMU for ~1 second. Returns PEAK movement (deg/s) and updates the global
 // axisG (averaged |monitored axis| in g) used for flat detection. Also the loop's 1-s tick.
 float sampleSecond() {
@@ -158,6 +175,25 @@ void loop() {
   Serial.print(" axisG="); Serial.print(axisG, 2);
   Serial.print(" motion="); Serial.print(motion, 0);
   Serial.print(" flat="); Serial.println(flat);
+
+  // ---- Charger handling ----
+  // On the charger the box is off the horse, lying flat on a shelf for hours -
+  // the posture alarms are meaningless there and the backstop WOULD fire.
+  // Announce the connection, keep the alarm state zeroed, announce completion.
+  boolean charging = onCharger();
+  if (charging && !wasOnCharger) {
+    sendSMS((String("Charger connected. Batt ") + batteryPercent(readBatteryVolts()) + "%").c_str());
+    fullAnnounced = false;
+  }
+  wasOnCharger = charging;
+  if (charging) {
+    flatCount = 0; activeWhileFlat = 0; labourSent = false;
+    episodeCount = 0; windowTimer = 0; earlyWarnSent = false;
+    if (!fullAnnounced && chargeDone()) {
+      sendSMS("Battery full - foal alarm ready");
+      fullAnnounced = true;
+    }
+  }
 
   // Age out the restlessness window
   if (windowTimer > 0) {
