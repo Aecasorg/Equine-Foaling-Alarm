@@ -14,9 +14,16 @@ Three updates are planned. Code for 1 + 2 is already merged into
 
 | # | Update | Code | Hardware | Calibrated | Field-tested |
 |---|--------|:----:|:--------:|:----------:|:------------:|
-| 1 | MPU-6050 motion sensor | ✅ | ☐ | ☐ | ☐ |
-| 2 | Battery monitoring + heartbeat SMS | ✅ | ☐ | ☐ | ☐ |
-| 3 | External charging socket | — (no code) | ☐ | — | ☐ |
+| 1 | MPU-6050 motion sensor | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
+| 2 | Battery monitoring + heartbeat SMS | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
+| 3 | External charging socket | — (no code) | ✅ 28 Jul 2026 | — | ☐ |
+
+Hardware fitted 28 Jul 2026: GY-521 soldered in (its four unused pins INT/AD0/XCL/XDA
+are parked on strips shared with unused MKR digital pins — **treat those digital pins
+as reserved in any future code**), SDA/SCL/power run by wire, old tilt switches
+desoldered, battery divider wired to A1, external socket wired to the 5V pin, and a
+fresh LiPo fitted. External 5 V confirmed to power the board + sensor. Next:
+flash, axis calibration, DIVIDER_RATIO check, bench alarm tests.
 
 Legacy tilt-switch firmware (deployed 2022–2026) is archived in
 [`legacy/GiiFoalAlarm-tilt-2022.ino`](../legacy/GiiFoalAlarm-tilt-2022.ino).

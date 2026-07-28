@@ -128,6 +128,7 @@ float sampleSecond() {
 
 void setup() {
   Serial.begin(9600);          // for bench calibration only; does NOT block if no monitor
+  pinMode(LED_BUILTIN, OUTPUT);
   gsmSetup();
   analogReadResolution(10);    // 0..1023
 
