@@ -13,22 +13,21 @@ MPU6050 mpu(Wire);
 const uint8_t BATTERY_PIN = A1;   // battery via 2:1 resistor divider (100k / 100k)
 const uint8_t PMIC_I2C_ADDR = 0x6B; // BQ24195 charger chip - shares the I2C bus with the MPU
 char numberToSMS[20] = SECRET_PHONE_NUMBER;
-// (Tilt switches removed - the MPU now detects lying-on-side itself. Old pin D1 is free.)
+// (Tilt switches removed. The GY-521's unused pins sit on unused MKR digital
+//  strips - treat those digital pins as reserved in any future code.)
 
-// ===== FLAT DETECTION - CALIBRATE THIS =====
-// HANGING_MOUNT true  = box dangles from the headcollar on a clip/strap.
-//   Monitor the axis that reads ~1 g while the box hangs still; when she lies on
-//   her side the box flops over and that reading COLLAPSES below SLACK_THRESHOLD_G.
-//   (Box spin on the strap doesn't matter - the hang axis stays the hang axis.)
-// HANGING_MOUNT false = box fixed flat against the cheekpiece.
-//   Monitor the axis that reads ~0 g standing/grazing and ~1 g on her side;
-//   flat = reading ABOVE FLAT_THRESHOLD_G.
-// Calibrate either way with Serial Monitor @9600: hold the box in each pose and
-// pick the axis (accX/accY/accZ) that behaves as described.
-const boolean HANGING_MOUNT = true;
-float monitoredAxisAccel() { return mpu.getAccX(); }  // <-- set after calibrating
-const float FLAT_THRESHOLD_G  = 0.70;  // fixed mount: above this = on side
-const float SLACK_THRESHOLD_G = 0.45;  // hanging mount: below this = on side
+// ===== SELF-ARMING FLAT DETECTION - no manual calibration =====
+// The box learns its own "upright" reference each time it is fitted: at power-on
+// and again after every unplug from the charger it enters a settling state, and
+// once the gravity direction has held steady for ARM_SECS it locks the reference
+// and texts ARMED. "Lying flat" is then a tilt of more than FLAT_ANGLE_DEG away
+// from that reference. Designed for a DANGLING box (self-plumbing, so grazing and
+// head position never move the reference); a rigid flat mount also works but with
+// less margin against grazing. Fit to a STANDING horse.
+const float ARM_CONSISTENT_DEG = 20.0;   // sample within this of the candidate = steady
+const int   ARM_SECS           = 120;    // steady this long -> lock reference & arm
+const float FLAT_ANGLE_DEG     = 60.0;   // tilt beyond this from reference = flat
+const long  ARM_REMINDER_SECS  = 1800;   // unarmed 30 min -> one "check it" nudge SMS
 
 // ---- Trigger thresholds (seconds / deg-per-second) ----
 const float MOTION_THRESHOLD    = 30.0; // gyro deg/s that counts as "real movement" (rest noise ~1-2)
@@ -45,7 +44,17 @@ const long  HEARTBEAT_INTERVAL_SECS = 86400L;  // ~24 h (loop ticks ~1 s)
 
 // ---- State ----
 boolean notConnected  = true;
-float   axisG         = 0.0;    // averaged |monitored axis| over the last sampled second
+
+boolean armed         = false;  // reference locked & monitoring?
+float   refX, refY, refZ;       // locked "upright" gravity direction (unit vector)
+float   candX, candY, candZ;    // candidate reference while settling (unit vector)
+boolean haveCand      = false;
+int     stableSecs    = 0;      // how long the candidate has held steady
+long    armingSecs    = 0;      // total unarmed time (for the reminder)
+boolean armReminded   = false;
+
+float   avgX, avgY, avgZ;       // averaged accel vector over the last sampled second (g)
+
 int  flatCount        = 0;      // seconds continuously flat this episode
 int  activeWhileFlat  = 0;      // seconds of movement seen within this flat episode
 boolean labourSent    = false;  // one lying-down alarm per flat episode
@@ -56,7 +65,7 @@ boolean earlyWarnSent = false;
 long    heartbeatTimer = 0;     // seconds since last heartbeat
 int     lowBattStreak  = 0;     // consecutive low readings (rides out GSM-TX voltage sag)
 boolean lowBattWarned  = false;
-boolean wasOnCharger   = false; // edge-detect for the "charger connected" SMS
+boolean wasOnCharger   = false; // edge-detect for charger connect/disconnect
 boolean fullAnnounced  = false; // one "battery full" SMS per charge session
 
 void gsmSetup() {
@@ -124,11 +133,11 @@ uint8_t pmicStatus() {
 boolean onCharger()  { return (pmicStatus() & 0x04) != 0; }    // PG_STAT: external 5V present
 boolean chargeDone() { return (pmicStatus() & 0x30) == 0x30; } // CHRG_STAT 11 = charge complete
 
-// Sample the IMU for ~1 second. Returns PEAK movement (deg/s) and updates the global
-// axisG (averaged |monitored axis| in g) used for flat detection. Also the loop's 1-s tick.
+// Sample the IMU for ~1 second. Returns PEAK movement (deg/s) and updates the
+// global avgX/Y/Z gravity vector. Also provides the loop's 1-second tick.
 float sampleSecond() {
   float peak = 0.0;
-  float accSum = 0.0;
+  float sx = 0.0, sy = 0.0, sz = 0.0;
   for (int i = 0; i < 20; i++) {           // 20 samples x 50 ms = ~1 s
     mpu.update();
     float gx = mpu.getGyroX();
@@ -136,15 +145,47 @@ float sampleSecond() {
     float gz = mpu.getGyroZ();
     float mag = sqrt(gx * gx + gy * gy + gz * gz);
     if (mag > peak) peak = mag;
-    accSum += fabs(monitoredAxisAccel());
+    sx += mpu.getAccX();
+    sy += mpu.getAccY();
+    sz += mpu.getAccZ();
     delay(50);
   }
-  axisG = accSum / 20.0;
+  avgX = sx / 20.0;
+  avgY = sy / 20.0;
+  avgZ = sz / 20.0;
   return peak;
 }
 
+float vecMag() { return sqrt(avgX * avgX + avgY * avgY + avgZ * avgZ); }
+
+// Angle (deg) between the current 1-s gravity vector and a stored unit vector.
+// Returns -1 if the current vector is unusable (being shaken / far from 1 g).
+float angleFrom(float ux, float uy, float uz) {
+  float m = vecMag();
+  if (m < 0.7 || m > 1.3) return -1.0;
+  float d = (avgX * ux + avgY * uy + avgZ * uz) / m;
+  if (d > 1.0)  d = 1.0;
+  if (d < -1.0) d = -1.0;
+  return acos(d) * 57.2958;
+}
+
+// Forget the reference and settle afresh (power-on, and after every unplug).
+void disarm() {
+  armed = false;
+  haveCand = false;
+  stableSecs = 0;
+  armingSecs = 0;
+  armReminded = false;
+  flatCount = 0;
+  activeWhileFlat = 0;
+  labourSent = false;
+  episodeCount = 0;
+  windowTimer = 0;
+  earlyWarnSent = false;
+}
+
 void setup() {
-  Serial.begin(9600);          // for bench calibration only; does NOT block if no monitor
+  Serial.begin(9600);          // bench debug only; does NOT block if no monitor
   pinMode(LED_BUILTIN, OUTPUT);
   gsmSetup();
   analogReadResolution(10);    // 0..1023
@@ -155,92 +196,138 @@ void setup() {
   mpu.calcOffsets(true, false); // gyro offsets only: hold still ~1s, ANY orientation is fine.
                                 // (Full calcOffsets() would also re-zero the accelerometer,
                                 //  which assumes the board is lying FLAT at power-on and
-                                //  would corrupt the lying-on-side detection otherwise.)
+                                //  would corrupt the tilt detection otherwise.)
 
-  // Boot confirmation SMS (also proves GSM + battery read are working on install)
+  // Boot confirmation SMS (also proves GSM + battery read are working)
   float vbat = readBatteryVolts();
-  sendSMS((String("Foal alarm online. Batt ") + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V)").c_str());
+  sendSMS((String("Foal alarm online. Batt ") + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V). Arming once fitted & settled").c_str());
 }
 
 void loop() {
-  float   motion = sampleSecond();                 // ~1 s elapsed here; also sets axisG
-  boolean flat   = HANGING_MOUNT ? (axisG < SLACK_THRESHOLD_G)
-                                 : (axisG > FLAT_THRESHOLD_G);
+  float   motion = sampleSecond();                 // ~1 s elapsed here; also sets avgX/Y/Z
   boolean moving = (motion > MOTION_THRESHOLD);
 
-  // Calibration / debug output (harmless in the field with no monitor attached)
-  Serial.print("accX="); Serial.print(mpu.getAccX(), 2);
-  Serial.print(" accY="); Serial.print(mpu.getAccY(), 2);
-  Serial.print(" accZ="); Serial.print(mpu.getAccZ(), 2);
-  Serial.print(" axisG="); Serial.print(axisG, 2);
-  Serial.print(" motion="); Serial.print(motion, 0);
-  Serial.print(" flat="); Serial.println(flat);
-
   // ---- Charger handling ----
-  // On the charger the box is off the horse, lying flat on a shelf for hours -
-  // the posture alarms are meaningless there and the backstop WOULD fire.
-  // Announce the connection, keep the alarm state zeroed, announce completion.
+  // On the charger the box is off the horse - stay dormant. Unplugging starts a
+  // fresh settling cycle, so every charge automatically re-fits the reference.
   boolean charging = onCharger();
   if (charging && !wasOnCharger) {
     sendSMS((String("Charger connected. Batt ") + batteryPercent(readBatteryVolts()) + "%").c_str());
     fullAnnounced = false;
   }
+  if (!charging && wasOnCharger) {
+    disarm();
+  }
   wasOnCharger = charging;
+
   if (charging) {
-    flatCount = 0; activeWhileFlat = 0; labourSent = false;
-    episodeCount = 0; windowTimer = 0; earlyWarnSent = false;
     if (!fullAnnounced && chargeDone()) {
       sendSMS("Battery full - foal alarm ready");
       fullAnnounced = true;
     }
-  }
 
-  // Age out the restlessness window
-  if (windowTimer > 0) {
-    windowTimer--;
+  } else if (!armed) {
+    // ---- Settling: learn the fitted orientation, then arm ----
+    armingSecs++;
+    float m = vecMag();
+    if (m > 0.7 && m < 1.3) {
+      if (!haveCand) {
+        candX = avgX / m; candY = avgY / m; candZ = avgZ / m;
+        haveCand = true;
+        stableSecs = 0;
+      } else {
+        float a = angleFrom(candX, candY, candZ);
+        if (a >= 0 && a < ARM_CONSISTENT_DEG) {
+          // steady - drift the candidate gently toward the measured direction
+          candX = candX * 0.95 + (avgX / m) * 0.05;
+          candY = candY * 0.95 + (avgY / m) * 0.05;
+          candZ = candZ * 0.95 + (avgZ / m) * 0.05;
+          float cm = sqrt(candX * candX + candY * candY + candZ * candZ);
+          candX /= cm; candY /= cm; candZ /= cm;
+          stableSecs++;
+        } else {
+          // orientation changed (being handled/fitted) - start the clock again
+          candX = avgX / m; candY = avgY / m; candZ = avgZ / m;
+          stableSecs = 0;
+        }
+      }
+      if (stableSecs >= ARM_SECS) {
+        refX = candX; refY = candY; refZ = candZ;
+        armed = true;
+        sendSMS((String("Foal alarm ARMED. Batt ") + batteryPercent(readBatteryVolts()) + "%").c_str());
+        blinkOn();
+      }
+    } else {
+      stableSecs = 0;   // being shaken/carried - keep waiting
+    }
+    if (!armReminded && armingSecs >= ARM_REMINDER_SECS) {
+      sendSMS("Foal alarm NOT armed yet - check it is clipped on and hanging still");
+      armReminded = true;
+    }
+
   } else {
-    episodeCount  = 0;
-    earlyWarnSent = false;
-  }
+    // ---- ARMED monitoring ----
+    float   tilt = angleFrom(refX, refY, refZ);
+    boolean flat = (tilt >= 0 && tilt > FLAT_ANGLE_DEG);
 
-  if (flat) {
-    flatCount++;
-    if (moving) activeWhileFlat++;
-
-    // Count toward restlessness once flat has held a few seconds - a hanging box
-    // can swing through a 1-2 s fake "flat" blip that must not count as an episode
-    if (flatCount == 3) {
-      episodeCount++;
-      windowTimer = EPISODE_WINDOW_SECS;
+    // Age out the restlessness window
+    if (windowTimer > 0) {
+      windowTimer--;
+    } else {
+      episodeCount  = 0;
+      earlyWarnSent = false;
     }
 
-    // (1) LABOUR: flat AND genuinely moving -> fast, confident alarm
-    if (!labourSent && activeWhileFlat >= ACTIVE_SECS_LABOUR) {
-      sendSMS("FOALING ALARM - lying down & active");
+    if (flat) {
+      flatCount++;
+      if (moving) activeWhileFlat++;
+
+      // Count toward restlessness once flat has held a few seconds - a swinging
+      // box can fake a 1-2 s "flat" blip that must not count as an episode
+      if (flatCount == 3) {
+        episodeCount++;
+        windowTimer = EPISODE_WINDOW_SECS;
+      }
+
+      // (1) LABOUR: flat AND genuinely moving -> fast, confident alarm
+      if (!labourSent && activeWhileFlat >= ACTIVE_SECS_LABOUR) {
+        sendSMS("FOALING ALARM - lying down & active");
+        blinkOn();
+        labourSent = true;
+      }
+
+      // (2) BACKSTOP: flat a very long time even if calm (cast mare / missed event)
+      if (!labourSent && flatCount >= CALM_FLAT_BACKSTOP) {
+        sendSMS("CHECK MARE - lying flat a long time");
+        blinkOn();
+        labourSent = true;
+      }
+
+    } else {
+      // She's back up: reset the flat-episode counters
+      flatCount       = 0;
+      activeWhileFlat = 0;
+      labourSent      = false;
+    }
+
+    // (3) EARLY WARNING: repeated up/down cycles in the window -> restless
+    if (!earlyWarnSent && episodeCount >= RESTLESS_EPISODES) {
+      sendSMS("Mare restless - foaling may be starting");
       blinkOn();
-      labourSent = true;
+      earlyWarnSent = true;
     }
-
-    // (2) BACKSTOP: flat a very long time even if calm (cast mare / missed event)
-    if (!labourSent && flatCount >= CALM_FLAT_BACKSTOP) {
-      sendSMS("CHECK MARE - lying flat a long time");
-      blinkOn();
-      labourSent = true;
-    }
-
-  } else {
-    // She's back up: reset the flat-episode counters
-    flatCount       = 0;
-    activeWhileFlat = 0;
-    labourSent      = false;
   }
 
-  // (3) EARLY WARNING: repeated up/down cycles in the window -> restless
-  if (!earlyWarnSent && episodeCount >= RESTLESS_EPISODES) {
-    sendSMS("Mare restless - foaling may be starting");
-    blinkOn();
-    earlyWarnSent = true;
-  }
+  // Bench debug (harmless in the field with no monitor attached)
+  Serial.print("state=");
+  Serial.print(charging ? "charging" : (armed ? "armed" : "arming"));
+  Serial.print(" |a|="); Serial.print(vecMag(), 2);
+  Serial.print(" tilt=");
+  if (armed)         Serial.print(angleFrom(refX, refY, refZ), 0);
+  else if (haveCand) Serial.print(angleFrom(candX, candY, candZ), 0);
+  else               Serial.print(-1);
+  Serial.print(" stable="); Serial.print(stableSecs);
+  Serial.print(" motion="); Serial.println(motion, 0);
 
   // ---- Battery + daily heartbeat ----
   float vbat = readBatteryVolts();
@@ -257,10 +344,10 @@ void loop() {
   }
   if (vbat > BATT_RECOVER_VOLTS) lowBattWarned = false;   // re-arm after a charge
 
-  // Daily "I'm alive" heartbeat with battery state
+  // Daily "I'm alive" heartbeat with battery + armed state
   heartbeatTimer++;
   if (heartbeatTimer >= HEARTBEAT_INTERVAL_SECS) {
     heartbeatTimer = 0;
-    sendSMS((String("Foal alarm OK. Batt ") + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V)").c_str());
+    sendSMS((String("Foal alarm OK (") + (armed ? "armed" : "NOT armed") + "). Batt " + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V)").c_str());
   }
 }

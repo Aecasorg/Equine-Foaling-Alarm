@@ -14,7 +14,7 @@ Three updates are planned. Code for 1 + 2 is already merged into
 
 | # | Update | Code | Hardware | Calibrated | Field-tested |
 |---|--------|:----:|:--------:|:----------:|:------------:|
-| 1 | MPU-6050 motion sensor | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
+| 1 | MPU-6050 motion sensor | ✅ | ✅ 28 Jul 2026 | — self-arms | ☐ |
 | 2 | Battery monitoring + heartbeat SMS | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
 | 3 | External charging socket | ✅ | ✅ 28 Jul 2026 | — | ☐ |
 
@@ -23,7 +23,7 @@ are parked on strips shared with unused MKR digital pins — **treat those digit
 as reserved in any future code**), SDA/SCL/power run by wire, old tilt switches
 desoldered, battery divider wired to A1, external socket wired to the 5V pin, and a
 fresh LiPo fitted. External 5 V confirmed to power the board + sensor. Next:
-flash, axis calibration, DIVIDER_RATIO check, bench alarm tests.
+flash, DIVIDER_RATIO check, bench arming + alarm tests, ship.
 
 Legacy tilt-switch firmware (deployed 2022–2026) is archived in
 [`legacy/GiiFoalAlarm-tilt-2022.ino`](../legacy/GiiFoalAlarm-tilt-2022.ino).
@@ -72,35 +72,40 @@ position and orientation every time** (the axis calibration assumes it — mark 
 spot), and a small keeper strap/lanyard is a cheap backstop since spring clips can
 work loose on a horse that rubs or rolls.
 
-**Mounting modes** — set `HANGING_MOUNT` in the sketch to match how the box
-actually sits once the belt clip is fitted:
+**Self-arming detection (no manual calibration, no mode switch):** the device is
+shipped to a remote operator, so nothing may require a laptop. The sketch learns
+its own "upright" reference every time it is fitted: at power-on, and again after
+every unplug from the charger, it enters a *settling* state (alarms off). Once its
+gravity direction has held steady for 2 minutes — what naturally happens when it's
+clipped on and hanging — it locks the reference and texts **"Foal alarm ARMED"**.
+"Lying flat" is then any tilt more than 60° away from that reference. If it hasn't
+armed within 30 minutes it texts a nudge to check it's clipped on. Every charge
+cycle therefore re-fits the reference automatically.
 
-- `true` (box dangles freely, as with the old pendant clip): the box is
-  self-plumbing, so the axis along the strap reads ~1 g in any upright head position
-  and collapses when she lies flat. Detection = hang axis < 0.45 g.
-- `false` (box held flat against the cheekpiece — the likely belt-clip geometry):
-  side axis picks up gravity when she lies on her side. Detection = side axis
-  > 0.70 g. This is the more deterministic mode — prefer it if the clip holds the
-  box firmly flat against the strap.
+Prefer the **dangling** arrangement: a hanging box self-plumbs, so grazing, head
+position and box spin never move it off its reference. A rigid flat-to-cheekpiece
+belt-clip mount also works, but a grazing head-down pose comes within ~10–15° of
+the 60° flat threshold, so the margin is slimmer.
 
-Re-run the axis calibration whenever the mounting arrangement changes.
+**Operator rules to ship with the device:** fit it to a *standing* horse, and
+switch it on (or unplug it from the charger) around fitting time rather than hours
+before — it locks onto the first steady orientation it sees, so don't let that be
+a shelf. Wait for the ARMED text before walking away.
 
-**Calibration (required before field use):** Serial Monitor @ 9600 prints
-`accX/accY/accZ/axisG/motion/flat` once a second. Hang the box still by its clip —
-the axis reading ~±1.0 is the one; set it in `monitoredAxisAccel()` (default `accX`).
-Lay the box on its side — reading should drop near 0 and `flat=1` appear.
-Power-on orientation doesn't matter (gyro-only offset calibration); just hold the
-box still for a second after switching on.
-
-**Bench tests before trusting it:**
-- Hold hanging + still → no SMS.
-- Lay flat + shake/rock ~8 s → LABOUR SMS.
-- Lay flat + hold still → nothing (temporarily drop `CALM_FLAT_BACKSTOP` to ~20 to
-  prove the backstop path).
+**Bench tests before shipping** (Serial Monitor @ 9600 shows
+`state / |a| / tilt / stable / motion` once a second; for quick tests drop
+`ARM_SECS` to ~15 and `CALM_FLAT_BACKSTOP` to ~20, then restore):
+- Hang the box still by its clip → "Foal alarm ARMED" SMS after the settle period.
+- Armed + hanging still → no further SMS.
+- Lay it flat + shake/rock ~8 s → LABOUR SMS.
+- Lay it flat + hold still → backstop SMS only after `CALM_FLAT_BACKSTOP`.
 - Flat ≥3 s / upright / repeat ×3 → EARLY WARNING SMS.
+- Plug the charger in → "Charger connected", alarms dormant; unplug → re-arms after
+  a fresh settle.
 
 **Main tuning dials:** `MOTION_THRESHOLD` (30 °/s) and `ACTIVE_SECS_LABOUR` (8 s) —
-raise if jumpy, lower if deaf. `SLACK_THRESHOLD_G` if flat detection needs margin.
+raise if jumpy, lower if deaf. `FLAT_ANGLE_DEG` (60°) for flat-detection margin,
+`ARM_SECS` (120 s) for how long settling takes.
 
 ## 2. Battery monitoring + daily heartbeat SMS
 
@@ -114,8 +119,10 @@ Same diagram as update 1. Drain ~20 µA, negligible.
 
 | SMS | When |
 |-----|------|
-| `Foal alarm online. Batt 87% (3.95V)` | every power-on (doubles as install check) |
-| `Foal alarm OK. Batt 78% (3.90V)` | daily heartbeat (~24 h); a *missing* heartbeat means the unit is dead/flat/out of signal |
+| `Foal alarm online. Batt 87% (3.95V). Arming once fitted & settled` | every power-on (doubles as install check) |
+| `Foal alarm ARMED. Batt 85%` | orientation held steady 2 min — reference locked, monitoring live |
+| `Foal alarm NOT armed yet - check it is clipped on and hanging still` | one nudge if still unarmed 30 min after power-on/unplug |
+| `Foal alarm OK (armed). Batt 78% (3.90V)` | daily heartbeat (~24 h) with armed state; a *missing* heartbeat means the unit is dead/flat/out of signal |
 | `LOW BATTERY 3.38V - charge foal alarm` | sustained reading < 3.40 V; re-arms after charging past 3.70 V |
 | `Charger connected. Batt 42%` | external 5 V detected — posture alarms suppressed while on charge |
 | `Battery full - foal alarm ready` | charger present and the BQ24195 reports charge complete |
