@@ -198,8 +198,14 @@ the UK on this hardware, through no fault of the device:
   = registration **denied** (policy, not signal).
 
 **Fix:** a native UK PAYG SIM on the EE, O2 or Vodafone families (native/MVNO SIMs
-are unaffected; their 2G runs until ~2029–2030). e.g. giffgaff (O2), Vodafone PAYG,
-1p Mobile (EE). Steps:
+are unaffected; their 2G runs until ~2029–2030).
+
+**Decision: Lebara (Vodafone MVNO).** Already used for the farm's LTE surveillance
+camera with good reception, so Vodafone has proven presence on site; Lebara SIMs
+include Vodafone 2G access. Note the camera proves the 4G layer — verify the 2G
+"calls & texts" layer for the farm postcode on Lebara's coverage checker before
+relying on it. Lebara's ~90-day inactivity policy is covered by the daily
+heartbeat SMS. Steps:
 
 - [ ] Check **2G coverage at the farm** per network (signalchecker.co.uk) and pick
       accordingly — rural 900 MHz (O2/Vodafone) often carries further than
