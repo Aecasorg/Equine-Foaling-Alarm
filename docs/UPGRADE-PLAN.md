@@ -17,6 +17,7 @@ Three updates are planned. Code for 1 + 2 is already merged into
 | 1 | MPU-6050 motion sensor | ✅ | ✅ 28 Jul 2026 | — self-arms | ☐ |
 | 2 | Battery monitoring + heartbeat SMS | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
 | 3 | External charging socket | ✅ | ✅ 28 Jul 2026 | — | ☐ |
+| 4 | Native UK SIM (roaming sunset) | — (no code) | ☐ | — | ☐ |
 
 Hardware fitted 28 Jul 2026: GY-521 soldered in (its four unused pins INT/AD0/XCL/XDA
 are parked on strips shared with unused MKR digital pins — **treat those digital pins
@@ -181,6 +182,38 @@ present the posture alarms are suppressed and their state zeroed — otherwise t
 completion sends `Battery full - foal alarm ready`.
 
 ---
+
+## 4. SIM replacement (diagnosed 29 Jul 2026)
+
+The original Things Mobile (Italian roaming) SIM can no longer connect anywhere in
+the UK on this hardware, through no fault of the device:
+
+- The SARA-U201 modem is **2G/3G only**.
+- All four UK operators completed their **3G switch-offs** by 2025.
+- **O2 — the last UK network accepting inbound 2G roamers — withdrew that access
+  from 1 Oct 2025** (Ofcom, "advice for IoT and third-party device suppliers").
+  Foreign roaming SIMs on 2G-only devices now get rejected by every UK network.
+- Confirmed by the AT diagnostic: modem healthy (IMEI OK), SIM healthy
+  (`+CPIN: READY`), network heard and attach attempted, ends `+CREG: 0,3`
+  = registration **denied** (policy, not signal).
+
+**Fix:** a native UK PAYG SIM on the EE, O2 or Vodafone families (native/MVNO SIMs
+are unaffected; their 2G runs until ~2029–2030). e.g. giffgaff (O2), Vodafone PAYG,
+1p Mobile (EE). Steps:
+
+- [ ] Check **2G coverage at the farm** per network (signalchecker.co.uk) and pick
+      accordingly — rural 900 MHz (O2/Vodafone) often carries further than
+      1800 MHz (EE).
+- [ ] Fit SIM (slot on the underside of the MKR), update `SECRET_PINNUMBER`
+      in `arduino_secrets.h` (or disable the PIN in a phone first and use "").
+- [ ] Re-run the GSM diagnostic: expect networks in the scan and `+CREG: 0,1`
+      (registered) or `0,5` (roaming).
+- [ ] Note: the daily heartbeat SMS doubles as the PAYG keep-alive — most PAYG
+      SIMs deactivate after ~6 months without chargeable activity.
+
+Long-term note: UK 2G sunsets ~2029–2030. If the alarm must outlive that, the
+successor path is the pin-compatible Arduino MKR NB 1500 (LTE-M) — the MKRNB
+library mirrors MKRGSM almost 1:1.
 
 ## Before shipping — final checklist
 
