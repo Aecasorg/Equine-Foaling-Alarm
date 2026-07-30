@@ -232,28 +232,30 @@ library mirrors MKRGSM almost 1:1.
 incoming SMS is printed. Needed for one-time verification codes (Lebara app
 registration), balance texts, etc. Re-flash the main sketch afterwards.
 
-## OPEN ISSUE — battery-only GSM attach fails (30 Jul 2026) — SHIP BLOCKER
+## Battery-only GSM attach failure (30 Jul 2026) — ROOT CAUSE FOUND, fix pending
 
 Symptom: on battery only, no 4-blink (GSM `begin()` never succeeds), no SMS; plug
 the charger in at the same spot and it registers and texts fine. Same location →
-not signal. GSM attach draws ~2 A transmit bursts (max power at Sig 10–12), so
-this is power delivery, and the field is battery-only — must be fixed pre-ship.
+not signal: GSM attach draws ~2 A transmit bursts (max power at Sig 10–12), so
+this was power delivery.
 
-Context: the OLD battery ran for years through the same switch; failures began
-with the NEW battery after the rebuild. Suspects, in order:
+**Root cause (confirmed by test): the on/off switch's own contacts.** Jumpering
+across the switch terminals — leaving all wires/crimps/connectors in circuit —
+restored battery-only attach immediately. Aged, oxidised contacts (never
+self-cleaning at ~50 mA idle) drop too much voltage during the 2 A bursts. The
+switch ran the old battery for years on shrinking margin; the rebuild moved the
+operating point just enough to expose it (hence the intermittent successes
+earlier the same day).
 
-1. New cell's protection PCB tripping on TX bursts (cheap ones cut at 1.5–2 A).
-2. Degraded crimp/switch contact in the battery path (series resistance → droop).
+**Fix:**
+- [ ] Fit a replacement switch rated **≥3 A** (mini rocker/toggle; sealed or
+      rubber-booted preferred for a field box), leads **soldered** to the lugs,
+      heat-shrunk, short 22–24 AWG run.
+- [ ] Re-verify: several battery-only boots (4 blinks + boot SMS each time) and
+      at least one alarm SMS sent on battery.
 
-Tests (battery-only has no Serial — LED + multimeter):
-- [ ] LED for 2 min: retry flash every ~1–2 s = clean begin() failures (droop);
-      total darkness = brown-out looping (protection trip).
-- [ ] Re-seat JST + red connector, work the switch a dozen times, retry.
-- [ ] Jumper across the switch terminals, boot on battery: 4 blinks = switch path
-      guilty → rebuild with ≥3 A switch, soldered joints, 22–24 AWG.
-- [ ] Still failing bypassed: meter on the CELL TABS during attempts — momentary
-      collapse toward 0 V = protection board tripping → replace with a cell rated
-      ≥3 A continuous discharge.
+Bench testing continues with the jumper in place meanwhile — the device is fully
+functional bypassed.
 
 ## Before shipping — final checklist
 
@@ -264,6 +266,8 @@ Tests (battery-only has no Serial — LED + multimeter):
       `CALM_FLAT_BACKSTOP` 1500).
 - [ ] Full bench pass: ARMED SMS, labour, backstop, restless, charger
       connect/full/re-arm.
+- [ ] New ≥3 A power switch fitted; battery-only GSM attach re-verified
+      (several boots + an alarm SMS on battery).
 - [ ] Charge to 100 % (orange LED off, `Battery full` SMS).
 - [ ] Pack the dedicated USB-A charger + A-to-C cable with the device, plus the
       one-page operator note (fit to a standing horse, wait for the ARMED text,
@@ -277,6 +281,7 @@ Tests (battery-only has no Serial — LED + multimeter):
 | Resistors | 100 kΩ 1% metal film | 2 | pennies |
 | USB-C panel socket | 2-pin waterproof, screw-in (RUNCCI-YUN) | pack | ~£8–10 |
 | Hook-up wire | thin solid-core | — | ~£2 |
+| On/off switch | ≥3 A rated, sealed/rubber boot preferred | 1 | ~£2–3 |
 | Belt clips | spring clip, box-to-headcollar quick release ([eBay 334736377513](https://www.ebay.co.uk/itm/334736377513)) | — | ✅ bought |
 
 ## Parked ideas (not scheduled)
