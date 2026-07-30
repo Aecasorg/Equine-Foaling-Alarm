@@ -7,6 +7,7 @@
 
 GSM gsmAccess;
 GSM_SMS sms;
+GSMScanner scannerNetworks;   // AT+CSQ readout for the status texts
 MPU6050 mpu(Wire);
 
 // ---- Hardware ----
@@ -109,6 +110,14 @@ void sendSMS(const char* msg) {
   sms.endSMS();
 }
 
+// Signal quality 0-31 (99/blank = unknown). SMS usually works from ~5; 10+ is comfortable.
+String signalStr() {
+  String s = scannerNetworks.getSignalStrength();
+  s.trim();
+  if (s.length() == 0 || s == "99") return "?/31";
+  return s + "/31";
+}
+
 // Averaged battery voltage through the divider.
 float readBatteryVolts() {
   long sum = 0;
@@ -208,7 +217,7 @@ void setup() {
 
   // Boot confirmation SMS (also proves GSM + battery read are working)
   float vbat = readBatteryVolts();
-  sendSMS((String("Foal alarm online. Batt ") + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V). Arming once fitted & settled").c_str());
+  sendSMS((String("Foal alarm online. Batt ") + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V). Sig " + signalStr() + ". Arming once fitted & settled").c_str());
 }
 
 void loop() {
@@ -262,7 +271,7 @@ void loop() {
       if (stableSecs >= ARM_SECS) {
         refX = candX; refY = candY; refZ = candZ;
         armed = true;
-        sendSMS((String("Foal alarm ARMED. Batt ") + batteryPercent(readBatteryVolts()) + "%").c_str());
+        sendSMS((String("Foal alarm ARMED. Batt ") + batteryPercent(readBatteryVolts()) + "%. Sig " + signalStr()).c_str());
         blinkOn();
       }
     } else {
@@ -356,6 +365,6 @@ void loop() {
   heartbeatTimer++;
   if (heartbeatTimer >= HEARTBEAT_INTERVAL_SECS) {
     heartbeatTimer = 0;
-    sendSMS((String("Foal alarm OK (") + (armed ? "armed" : "NOT armed") + "). Batt " + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V)").c_str());
+    sendSMS((String("Foal alarm OK (") + (armed ? "armed" : "NOT armed") + "). Batt " + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V). Sig " + signalStr()).c_str());
   }
 }

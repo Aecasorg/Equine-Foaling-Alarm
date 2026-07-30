@@ -17,7 +17,7 @@ Three updates are planned. Code for 1 + 2 is already merged into
 | 1 | MPU-6050 motion sensor | ✅ | ✅ 28 Jul 2026 | — self-arms | ☐ |
 | 2 | Battery monitoring + heartbeat SMS | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
 | 3 | External charging socket | ✅ | ✅ 28 Jul 2026 | — | ☐ |
-| 4 | Native UK SIM (roaming sunset) | — (no code) | ☐ | — | ☐ |
+| 4 | Native UK SIM (roaming sunset) | — (no code) | ✅ 30 Jul 2026 | — | ☐ |
 
 Hardware fitted 28 Jul 2026: GY-521 soldered in (its four unused pins INT/AD0/XCL/XDA
 are parked on strips shared with unused MKR digital pins — **treat those digital pins
@@ -210,10 +210,12 @@ heartbeat SMS. Steps:
 - [ ] Check **2G coverage at the farm** per network (signalchecker.co.uk) and pick
       accordingly — rural 900 MHz (O2/Vodafone) often carries further than
       1800 MHz (EE).
-- [ ] Fit SIM (slot on the underside of the MKR), update `SECRET_PINNUMBER`
-      in `arduino_secrets.h` (or disable the PIN in a phone first and use "").
-- [ ] Re-run the GSM diagnostic: expect networks in the scan and `+CREG: 0,1`
-      (registered) or `0,5` (roaming).
+- [x] Fit SIM (slot on the underside of the MKR); Lebara ships PIN-free, so
+      `SECRET_PINNUMBER` is now `""`.
+- [x] Re-run the GSM diagnostic — **passed 30 Jul 2026**: registered on
+      "Lebara" (2G, `+CREG: 0,1`). Bench signal CSQ 5/31 (weak indoors, as
+      expected at that spot); status SMSes now report signal so the farm
+      fitting gives the number that matters.
 - [ ] Note: the daily heartbeat SMS doubles as the PAYG keep-alive — most PAYG
       SIMs deactivate after ~6 months without chargeable activity.
 
