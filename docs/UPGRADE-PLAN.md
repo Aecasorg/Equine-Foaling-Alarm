@@ -223,6 +223,12 @@ Long-term note: UK 2G sunsets ~2029–2030. If the alarm must outlive that, the
 successor path is the pin-compatible Arduino MKR NB 1500 (LTE-M) — the MKRNB
 library mirrors MKRGSM almost 1:1.
 
+**Tool — reading SMS sent TO the alarm's SIM:** flash
+[`tools/SmsInbox/SmsInbox.ino`](../tools/SmsInbox/SmsInbox.ino) (copy your
+`arduino_secrets.h` into its folder) and open the Serial Monitor — every
+incoming SMS is printed. Needed for one-time verification codes (Lebara app
+registration), balance texts, etc. Re-flash the main sketch afterwards.
+
 ## Before shipping — final checklist
 
 - [ ] **Swap `SECRET_PHONE_NUMBER` in `arduino_secrets.h` back to the real
