@@ -15,7 +15,7 @@ Three updates are planned. Code for 1 + 2 is already merged into
 | # | Update | Code | Hardware | Calibrated | Field-tested |
 |---|--------|:----:|:--------:|:----------:|:------------:|
 | 1 | MPU-6050 motion sensor | ✅ | ✅ 28 Jul 2026 | — self-arms | ☐ |
-| 2 | Battery monitoring + heartbeat SMS | ✅ | ✅ 28 Jul 2026 | ☐ | ☐ |
+| 2 | Battery monitoring + heartbeat SMS | ✅ | ✅ 28 Jul 2026 | ✅ 30 Jul 2026 | ☐ |
 | 3 | External charging socket | ✅ | ✅ 28 Jul 2026 | — | ☐ |
 | 4 | Native UK SIM (roaming sunset) | — (no code) | ✅ 30 Jul 2026 | — | ☐ |
 
@@ -129,7 +129,10 @@ Same diagram as update 1. Drain ~20 µA, negligible.
 | `Battery full - foal alarm ready` | charger present and the BQ24195 reports charge complete |
 
 **Calibration:** compare the boot SMS voltage against a multimeter on the battery and
-nudge `DIVIDER_RATIO` (2.0 nominal) until they agree.
+nudge `DIVIDER_RATIO` (2.0 nominal) until they agree. **Done 30 Jul 2026:** off-charger,
+same-minute readings were SMS 4.02 V vs meter 4.03 V — 0.25% off, within resistor
+tolerance, ratio kept at 2.0. (Note: "Battery full" tops out around ~89% on the SMS
+scale by design — the charger terminates at ~4.11 V, not 4.20 V, for cell longevity.)
 
 **Expected battery life:** ~2–4 days per charge (modem dominates; weak signal and
 cold nights push it toward the low end). The heartbeat's day-over-day % drop gives
