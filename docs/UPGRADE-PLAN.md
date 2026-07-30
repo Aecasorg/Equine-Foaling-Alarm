@@ -232,6 +232,29 @@ library mirrors MKRGSM almost 1:1.
 incoming SMS is printed. Needed for one-time verification codes (Lebara app
 registration), balance texts, etc. Re-flash the main sketch afterwards.
 
+## OPEN ISSUE — battery-only GSM attach fails (30 Jul 2026) — SHIP BLOCKER
+
+Symptom: on battery only, no 4-blink (GSM `begin()` never succeeds), no SMS; plug
+the charger in at the same spot and it registers and texts fine. Same location →
+not signal. GSM attach draws ~2 A transmit bursts (max power at Sig 10–12), so
+this is power delivery, and the field is battery-only — must be fixed pre-ship.
+
+Context: the OLD battery ran for years through the same switch; failures began
+with the NEW battery after the rebuild. Suspects, in order:
+
+1. New cell's protection PCB tripping on TX bursts (cheap ones cut at 1.5–2 A).
+2. Degraded crimp/switch contact in the battery path (series resistance → droop).
+
+Tests (battery-only has no Serial — LED + multimeter):
+- [ ] LED for 2 min: retry flash every ~1–2 s = clean begin() failures (droop);
+      total darkness = brown-out looping (protection trip).
+- [ ] Re-seat JST + red connector, work the switch a dozen times, retry.
+- [ ] Jumper across the switch terminals, boot on battery: 4 blinks = switch path
+      guilty → rebuild with ≥3 A switch, soldered joints, 22–24 AWG.
+- [ ] Still failing bypassed: meter on the CELL TABS during attempts — momentary
+      collapse toward 0 V = protection board tripping → replace with a cell rated
+      ≥3 A continuous discharge.
+
 ## Before shipping — final checklist
 
 - [ ] **Swap `SECRET_PHONE_NUMBER` in `arduino_secrets.h` back to the real
