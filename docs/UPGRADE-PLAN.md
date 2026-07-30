@@ -259,9 +259,11 @@ functional bypassed.
 
 ## Before shipping — final checklist
 
-- [ ] **Swap `SECRET_PHONE_NUMBER` in `arduino_secrets.h` back to the real
-      recipient** (testing is being done with Henrik's own number), re-flash,
-      and confirm the boot SMS arrives on the right phone.
+- [ ] **Set the ship recipients in `arduino_secrets.h`**: `SECRET_PHONE_NUMBER`
+      = mum (testing currently uses Henrik's number), `SECRET_PHONE_NUMBER_2`
+      = Henrik, for remote monitoring ("" disables a slot). Re-flash and
+      confirm the boot SMS arrives on both phones. Two recipients = double
+      the SMS count on the Lebara tariff.
 - [ ] Restore any thresholds relaxed for bench testing (`ARM_SECS` 120,
       `CALM_FLAT_BACKSTOP` 1500).
 - [ ] Full bench pass: ARMED SMS, labour, backstop, restless, charger

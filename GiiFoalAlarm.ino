@@ -13,7 +13,10 @@ MPU6050 mpu(Wire);
 // ---- Hardware ----
 const uint8_t BATTERY_PIN = A1;   // battery via 2:1 resistor divider (100k / 100k)
 const uint8_t PMIC_I2C_ADDR = 0x6B; // BQ24195 charger chip - shares the I2C bus with the MPU
-char numberToSMS[20] = SECRET_PHONE_NUMBER;
+// Every alert goes to each listed number in turn (a few seconds apart).
+// Set a slot to "" in arduino_secrets.h to disable it.
+const char* smsRecipients[] = { SECRET_PHONE_NUMBER, SECRET_PHONE_NUMBER_2 };
+const int   NUM_RECIPIENTS  = sizeof(smsRecipients) / sizeof(smsRecipients[0]);
 // (Tilt switches removed. The GY-521's unused pins sit on unused MKR digital
 //  strips - treat those digital pins as reserved in any future code.)
 
@@ -105,9 +108,12 @@ void blinkSignal() {
 }
 
 void sendSMS(const char* msg) {
-  sms.beginSMS(numberToSMS);
-  sms.print(msg);
-  sms.endSMS();
+  for (int i = 0; i < NUM_RECIPIENTS; i++) {
+    if (strlen(smsRecipients[i]) < 3) continue;   // "" slot = unused
+    sms.beginSMS(smsRecipients[i]);
+    sms.print(msg);
+    sms.endSMS();
+  }
 }
 
 // Signal quality 0-31 (99/blank = unknown). SMS usually works from ~5; 10+ is comfortable.
