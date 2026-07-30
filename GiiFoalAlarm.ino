@@ -229,8 +229,16 @@ void loop() {
   // fresh settling cycle, so every charge automatically re-fits the reference.
   boolean charging = onCharger();
   if (charging && !wasOnCharger) {
-    sendSMS((String("Charger connected. Batt ") + batteryPercent(readBatteryVolts()) + "%").c_str());
-    fullAnnounced = false;
+    float v = readBatteryVolts();
+    if (v < 0.5) {
+      // ~0V on the divider = the on/off switch has the battery out of circuit
+      // (we tap the JST side of the switch). Charging like this fills nothing.
+      sendSMS("Charger connected but no battery detected (switch OFF?) - NOT charging");
+      fullAnnounced = true;   // also suppresses a bogus "battery full" with no battery
+    } else {
+      sendSMS((String("Charger connected. Batt ") + batteryPercent(v) + "%").c_str());
+      fullAnnounced = false;
+    }
   }
   if (!charging && wasOnCharger) {
     disarm();
@@ -351,8 +359,10 @@ void loop() {
 
   // Low-battery warning: require a sustained low reading so a momentary
   // GSM-transmit voltage sag doesn't trip it.
-  if (vbat < LOW_BATT_VOLTS) lowBattStreak++;
-  else                       lowBattStreak = 0;
+  // (< 0.5V means the switch has the battery out of circuit - that's a
+  //  switched-off state, not a flat battery, so it must not trip the warning)
+  if (vbat > 0.5 && vbat < LOW_BATT_VOLTS) lowBattStreak++;
+  else                                     lowBattStreak = 0;
 
   if (!lowBattWarned && lowBattStreak >= 10) {
     sendSMS((String("LOW BATTERY ") + String(vbat, 2) + "V - charge foal alarm").c_str());
