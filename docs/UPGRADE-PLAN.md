@@ -247,15 +247,25 @@ switch ran the old battery for years on shrinking margin; the rebuild moved the
 operating point just enough to expose it (hence the intermittent successes
 earlier the same day).
 
-**Fix:**
-- [ ] Fit a replacement switch rated **≥3 A** (mini rocker/toggle; sealed or
-      rubber-booted preferred for a field box), leads **soldered** to the lugs,
-      heat-shrunk, short 22–24 AWG run.
+**Update 31 Jul 2026 — battery shorted during the rebuild.** Red and black battery
+leads got soldered to the same strip: dead short across the cell. Cell now rests at
+2.87 V (below the 3.0 V over-discharge floor), "charges" suspiciously fast but won't
+run the board — classic short-damaged cell (internal resistance up, capacity gone).
+Board itself unharmed (runs on charger). **The cell is compromised and will be
+replaced, not rehabilitated** — shorted + over-discharged LiPos are a charge-time
+fire risk, unacceptable for an unattended stable device. Do not charge it
+unattended; check for swelling/heat/smell and recycle it properly.
+
+**Battery-path rebuild (one work package):**
+- [ ] Remove the shorting joint; meter-verify + and − lines are not ~0 Ω.
+- [ ] Inspect harness for heat-damaged insulation; replace suspect wire.
+- [ ] Replacement 2500 mAh LiPo with protection PCB rated **≥3 A discharge**.
+- [ ] Inline fuse (~3 A) in the battery + lead — a soldering slip then costs a
+      fuse, not a cell.
+- [ ] Fit the replacement switch rated **≥3 A** (sealed/booted preferred), leads
+      **soldered** to the lugs, heat-shrunk, short 22–24 AWG run.
 - [ ] Re-verify: several battery-only boots (4 blinks + boot SMS each time) and
       at least one alarm SMS sent on battery.
-
-Bench testing continues with the jumper in place meanwhile — the device is fully
-functional bypassed.
 
 ## Before shipping — final checklist
 
@@ -283,6 +293,9 @@ functional bypassed.
 | Resistors | 100 kΩ 1% metal film | 2 | pennies |
 | USB-C panel socket | 2-pin waterproof, screw-in (RUNCCI-YUN) | pack | ~£8–10 |
 | Hook-up wire | thin solid-core | — | ~£2 |
+| On/off switch | ≥3 A rated, sealed or rubber-booted | 1 | ~£2–3 |
+| LiPo battery | 2500 mAh, protection PCB ≥3 A discharge | 1 | ~£10 |
+| Inline fuse + holder | ~3 A, battery + lead | 1 | ~£1 |
 | On/off switch | ≥3 A rated, sealed/rubber boot preferred | 1 | ~£2–3 |
 | Belt clips | spring clip, box-to-headcollar quick release ([eBay 334736377513](https://www.ebay.co.uk/itm/334736377513)) | — | ✅ bought |
 
