@@ -294,7 +294,7 @@ unattended; check for swelling/heat/smell and recycle it properly.
 | USB-C panel socket | 2-pin waterproof, screw-in (RUNCCI-YUN) | pack | ~£8–10 |
 | Hook-up wire | thin solid-core | — | ~£2 |
 | On/off switch | ≥3 A rated, sealed or rubber-booted | 1 | ~£2–3 |
-| LiPo battery | **Chosen: 724957** (7.2×49×57 mm, 2500 mAh, PCM, JST-PHR-02) — fits: the existing pack is a 785060 (7.8×50×60), so 724957 is smaller on every axis. (375678 rejected: 80 mm too long for the bay.) 0.5C rating is fine — sustained TX averages ~0.5 A, bursts are sub-ms pulses. **Meter the JST plug polarity before connecting — aftermarket packs often ship reversed and a swapped plug kills the board** | 1 | ~£10 |
+| LiPo battery | **Chosen: 724957** (7.2×49×57–59 mm, 2500 mAh, PCM, JST-PH) — fits: the existing pack is a 785060 (7.8×50×60), so 724957 is smaller on every axis. (375678 rejected: 80 mm too long for the bay.) Buy the listing that specs **discharge standard 1.25 A / max 2.5 A** (seller tables for this model vary; a 0.5C variant would still work, but take the 1C one). **Meter the JST plug polarity before connecting — aftermarket packs often ship reversed and a swapped plug kills the board** | 1 | ~£10 |
 | Inline fuse + holder | ~3 A, battery + lead | 1 | ~£1 |
 | On/off switch | ≥3 A rated, sealed/rubber boot preferred | 1 | ~£2–3 |
 | Belt clips | spring clip, box-to-headcollar quick release ([eBay 334736377513](https://www.ebay.co.uk/itm/334736377513)) | — | ✅ bought |
