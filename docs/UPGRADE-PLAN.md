@@ -295,7 +295,7 @@ unattended; check for swelling/heat/smell and recycle it properly.
 | Hook-up wire | thin solid-core | — | ~£2 |
 | On/off switch | ✅ bought: SPST mini toggle, 6 A/125 VAC, pre-wired 0.5 mm² leads, 6 mm bushing. Solder (never crimp) where its leads join the harness; add an M6 rubber toggle boot for weather sealing | 1 | ~£2–3 |
 | LiPo battery | Existing pack is a 785060 (7.8×50×60). Two candidates, decided by **measured clearance above the battery bay** (a LiPo must never be compressed, and packs swell with age): **≥12 mm free height → 105151** (10×51×53, 3000 mAh, 1.5 A std / 3 A max — electrically the best); **tighter → 724957** (7.2×49×57–59, 2500 mAh; buy the listing that specs 1.25 A std / 2.5 A max — seller tables vary). 375678 rejected: 80 mm too long. **Meter the JST plug polarity before connecting — aftermarket packs often ship reversed and a swapped plug kills the board** | 1 | ~£10 |
-| Inline fuse + holder | ~3 A, battery + lead | 1 | ~£1 |
+| Inline fuse | **Waived** (no holder fits the enclosure; the pack's own PCM covers hard shorts). Zero-space retrofit option if ever wanted: radial PTC polyfuse, hold ≥3 A (RUEF300-class), soldered inline in the + lead under heat-shrink | — | — |
 | On/off switch | ≥3 A rated, sealed/rubber boot preferred | 1 | ~£2–3 |
 | Belt clips | spring clip, box-to-headcollar quick release ([eBay 334736377513](https://www.ebay.co.uk/itm/334736377513)) | — | ✅ bought |
 
