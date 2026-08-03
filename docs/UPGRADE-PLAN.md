@@ -293,6 +293,22 @@ Fix if it's the seam pinch: a dedicated cable exit (notch or grommet + sealant)
 placed so the lid never bears on the coax, with a slack loop inside so lid
 pressure can't transfer to the u.FL.
 
+**Findings 1 Aug (photos):** antenna identified — Molex "Cellular 6 Band" 105261
+flex, adhered to the OUTSIDE of the long wall. Flex antennas need a
+conductor-free zone behind the element, and the lid compresses the interior
+stack (black foam block + battery pouch) against the inside of that exact wall.
+The rerouted battery wires also now cross over the u.FL zone, giving lid
+pressure a path onto the coax head. Refined tests:
+- [ ] Meter the black foam (probes ~2 cm apart): any reading = conductive ESD
+      foam = an RF absorber pressed on the antenna's back → replace with plain
+      non-conductive foam.
+- [ ] Lid on with the black foam removed → attaches = culprit confirmed.
+- [ ] Open immediately after a lid-on failure: is the u.FL still seated flush?
+- [ ] Ensure the battery pouch (metal slab) doesn't press flat against the
+      antenna wall under compression; pad with non-conductive foam.
+- [ ] Dress wires so nothing crosses the u.FL head; optional rigid bridge over
+      it as armour.
+
 ## Before shipping — final checklist
 
 - [ ] **Set the ship recipients in `arduino_secrets.h`**: `SECRET_PHONE_NUMBER`
