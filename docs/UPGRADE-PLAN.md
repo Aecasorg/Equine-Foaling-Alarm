@@ -257,15 +257,41 @@ fire risk, unacceptable for an unattended stable device. Do not charge it
 unattended; check for swelling/heat/smell and recycle it properly.
 
 **Battery-path rebuild (one work package):**
-- [ ] Remove the shorting joint; meter-verify + and − lines are not ~0 Ω.
-- [ ] Inspect harness for heat-damaged insulation; replace suspect wire.
-- [ ] Replacement 2500 mAh LiPo with protection PCB rated **≥3 A discharge**.
-- [ ] Inline fuse (~3 A) in the battery + lead — a soldering slip then costs a
-      fuse, not a cell.
-- [ ] Fit the replacement switch rated **≥3 A** (sealed/booted preferred), leads
-      **soldered** to the lugs, heat-shrunk, short 22–24 AWG run.
-- [ ] Re-verify: several battery-only boots (4 blinks + boot SMS each time) and
-      at least one alarm SMS sent on battery.
+- [x] Shorting joint removed; harness rebuilt.
+- [x] Replacement pack fitted: 724957 (2.5 A listing), its JST direct into the
+      MKR socket.
+- [x] Inline fuse — **waived** (no holder fits the enclosure; the pack's PCM
+      covers hard shorts; radial PTC polyfuse noted as zero-space retrofit).
+- [x] 6 A SPST mini toggle spliced into the battery + line via soldered
+      perfboard pads; old intermediate connector eliminated.
+- [x] Re-verify battery-only attach — **passed 1 Aug 2026 with the case OPEN**
+      (4 blinks + SMS on battery). Power path closed. Lid-on failure is a
+      separate RF issue (next section).
+
+## Lid-on attach failure (open, 1 Aug 2026) — RF path, not power
+
+With the rebuild done, battery-only attach works case-open but fails with the
+lid fitted → the lid only touches the RF path. The antenna is external; its coax
+enters the box. Suspects in order:
+
+1. Coax pinched at the lid seam (crushed coax ≈ disconnected antenna — look for
+   a bite mark on the cable at the case joint).
+2. Lid/foam pressure popping the u.FL off the board (open the box immediately
+   after a lid-on failure and inspect before touching anything).
+3. Foam crushing the coax flat against a board edge.
+4. Plain signal margin at the known-weak bench spot (lid costs a couple of dB).
+
+Tests (the boot SMS `Sig n/31` is the instrument):
+- [ ] Lid resting vs screwed tight: attaches resting but not screwed =
+      mechanical compression.
+- [ ] Lid fully on, outdoors/at a window: attaches = box healthy, the shelf is a
+      dead spot; the farm fitting (ARMED text signal) is the real verdict.
+- [ ] Boot-SMS signal lid-off vs lid-on, same spot: small drop = lid innocent;
+      collapse = the closure is wrecking the antenna path.
+
+Fix if it's the seam pinch: a dedicated cable exit (notch or grommet + sealant)
+placed so the lid never bears on the coax, with a slack loop inside so lid
+pressure can't transfer to the u.FL.
 
 ## Before shipping — final checklist
 
