@@ -268,6 +268,18 @@ unattended; check for swelling/heat/smell and recycle it properly.
       (4 blinks + SMS on battery). Power path closed. Lid-on failure is a
       separate RF issue (next section).
 
+## Lid-on attach failure — RESOLVED 2 Aug 2026
+
+**Root cause: the thick red switch wires lay across the antenna coax / u.FL
+zone; lid compression pressed them onto the feed line.** Rerouted to the far
+side of the box → attaches with the lid on. Rule going forward: the coax and
+u.FL keep an exclusion zone — no wiring crosses them — and the red pair gets
+anchored (hot glue / adhesive tie) so vibration on the horse can't migrate it
+back. Final proof: 3× battery-only boots with the lid screwed down + Sig
+comparison lid-on vs lid-off (small delta = healthy baseline).
+
+<details><summary>Original diagnosis notes (kept for reference)</summary>
+
 ## Lid-on attach failure (open, 1 Aug 2026) — RF path, not power
 
 With the rebuild done, battery-only attach works case-open but fails with the
@@ -308,6 +320,8 @@ pressure a path onto the coax head. Refined tests:
       antenna wall under compression; pad with non-conductive foam.
 - [ ] Dress wires so nothing crosses the u.FL head; optional rigid bridge over
       it as armour.
+
+</details>
 
 ## Before shipping — final checklist
 
