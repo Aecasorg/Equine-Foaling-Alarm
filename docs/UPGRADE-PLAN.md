@@ -91,7 +91,11 @@ the 60° flat threshold, so the margin is slimmer.
 **Operator rules to ship with the device:** fit it to a *standing* horse, and
 switch it on (or unplug it from the charger) around fitting time rather than hours
 before — it locks onto the first steady orientation it sees, so don't let that be
-a shelf. Wait for the ARMED text before walking away.
+a shelf. Wait for the ARMED text before walking away. **When switching it off,
+leave it off for ~30 seconds before switching on again** — the radio coasts on
+stored charge for several seconds (watch the LEDs fade), and a quick off–on wakes
+it in a wedged state that can't reconnect. Off until dark + a few seconds = clean
+start.
 
 **Bench tests before shipping** (Serial Monitor @ 9600 shows
 `state / |a| / tilt / stable / motion` once a second; for quick tests drop
