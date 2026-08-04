@@ -36,7 +36,10 @@ const long  ARM_REMINDER_SECS  = 1800;   // unarmed 30 min -> one "check it" nud
 // ---- Trigger thresholds (seconds / deg-per-second) ----
 const float MOTION_THRESHOLD    = 30.0; // gyro deg/s that counts as "real movement" (rest noise ~1-2)
 const int   ACTIVE_SECS_LABOUR  = 8;    // seconds of movement WHILE FLAT => labour, alarm fast
-const int   CALM_FLAT_BACKSTOP  = 1500; // flat & calm this long (25 min) => "check mare" safety net
+const int   CALM_FLAT_BACKSTOP  = 0;    // seconds flat-and-calm before a "check mare" nudge.
+                                        // 0 = DISABLED (owner's call, 2 Aug 2026: mares rest flat
+                                        // routinely, so this alerted on normal sleep). Set e.g.
+                                        // 3600 (60 min) to re-enable as a cast-mare safety net.
 const int   RESTLESS_EPISODES   = 3;    // up/down cycles within the window => early warning
 const int   EPISODE_WINDOW_SECS = 1200; // 20 min window for counting restlessness
 
@@ -355,8 +358,9 @@ void loop() {
         labourSent = true;
       }
 
-      // (2) BACKSTOP: flat a very long time even if calm (cast mare / missed event)
-      if (!labourSent && flatCount >= CALM_FLAT_BACKSTOP) {
+      // (2) BACKSTOP (disabled while CALM_FLAT_BACKSTOP == 0): flat a very long
+      // time even if calm - the quiet-labour / cast-mare net
+      if (!labourSent && CALM_FLAT_BACKSTOP > 0 && flatCount >= CALM_FLAT_BACKSTOP) {
         sendSMS("CHECK MARE - lying flat a long time");
         blinkOn();
         labourSent = true;

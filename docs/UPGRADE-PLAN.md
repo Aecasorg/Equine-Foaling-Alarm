@@ -62,7 +62,7 @@ D1 strip while the old tilt switches + pull-up are fitted — that strip still s
 | Tier | Condition | Meaning |
 |------|-----------|---------|
 | LABOUR | flat AND gyro-active for 8 s | fast, confident alarm — a sleeping mare is flat but *still* |
-| BACKSTOP | flat 25 min even if calm | safety net: missed event or cast mare |
+| BACKSTOP | **disabled** (`CALM_FLAT_BACKSTOP = 0`) | was "flat 25 min even if calm → check mare"; removed 2 Aug 2026 because mares rest flat routinely and it alerted on normal sleep. Trade-off accepted: no alert for a silent labour or a cast mare lying still. Set the constant (e.g. 3600 s) to re-enable |
 | EARLY WARNING | ≥3 lie-down episodes in 20 min (3 s debounce) | stage-1 restlessness starting |
 
 **Mounting hardware:** spring belt clips
@@ -95,11 +95,11 @@ a shelf. Wait for the ARMED text before walking away.
 
 **Bench tests before shipping** (Serial Monitor @ 9600 shows
 `state / |a| / tilt / stable / motion` once a second; for quick tests drop
-`ARM_SECS` to ~15 and `CALM_FLAT_BACKSTOP` to ~20, then restore):
+`ARM_SECS` to ~15, then restore):
 - Hang the box still by its clip → "Foal alarm ARMED" SMS after the settle period.
 - Armed + hanging still → no further SMS.
 - Lay it flat + shake/rock ~8 s → LABOUR SMS.
-- Lay it flat + hold still → backstop SMS only after `CALM_FLAT_BACKSTOP`.
+- Lay it flat + hold still → silence (nap immunity; the backstop text is disabled).
 - Flat ≥3 s / upright / repeat ×3 → EARLY WARNING SMS.
 - Plug the charger in → "Charger connected", alarms dormant; unplug → re-arms after
   a fresh settle.
@@ -333,8 +333,8 @@ pressure a path onto the coax head. Refined tests:
       = Henrik, for remote monitoring ("" disables a slot). Re-flash and
       confirm the boot SMS arrives on both phones. Two recipients = double
       the SMS count on the Lebara tariff.
-- [ ] Restore any thresholds relaxed for bench testing (`ARM_SECS` 120,
-      `CALM_FLAT_BACKSTOP` 1500).
+- [ ] Restore any thresholds relaxed for bench testing (`ARM_SECS` 120;
+      `CALM_FLAT_BACKSTOP` stays 0 = backstop disabled by owner decision).
 - [ ] Full bench pass: ARMED SMS, labour, backstop, restless, charger
       connect/full/re-arm.
 - [ ] New ≥3 A power switch fitted; battery-only GSM attach re-verified
