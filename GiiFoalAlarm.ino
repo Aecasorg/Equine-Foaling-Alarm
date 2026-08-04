@@ -179,9 +179,13 @@ void checkInbox() {
       float vbat = readBatteryVolts();
       String state = onCharger() ? (chargeDone() ? "on charger, battery full" : "charging")
                                  : (armed ? "armed" : "arming");
+      // Build the WHOLE report before beginSMS: signalStr() talks AT commands to
+      // the modem, and once beginSMS has it in text-entry mode the command would
+      // be typed into the message instead of answered ("AT+CSQ ... Sig ?/31").
+      String report = String("Foal alarm status: ") + state + ". Batt " + batteryPercent(vbat)
+                      + "% (" + String(vbat, 2) + "V). Sig " + signalStr();
       sms.beginSMS(from);
-      sms.print((String("Foal alarm status: ") + state + ". Batt " + batteryPercent(vbat)
-                 + "% (" + String(vbat, 2) + "V). Sig " + signalStr()).c_str());
+      sms.print(report.c_str());
       sms.endSMS();
     }
   }
