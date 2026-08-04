@@ -24,8 +24,11 @@ You can also **text the word `status`** to the alarm's number at any time — it
 ## Charging (about every 2 days, or when LOW BATTERY arrives)
 
 1. Unclip the box from the headcollar. **Leave the switch ON.**
-2. Plug the **supplied charger and cable** into the socket on the box.
-   ⚠ Use **only the supplied white USB-A plug** — modern USB-C chargers will *not* charge it.
+2. Plug the **supplied cable** into the socket on the box, and its big flat end
+   into any ordinary **USB-A** wall charger (like the one in the kitchen).
+   ⚠ Use **only the supplied cable**. If it doesn't fit a charger, that charger
+   is the wrong kind — modern USB-C chargers will *not* charge it. Any old phone
+   charger with the rectangular socket is fine; power rating doesn't matter.
 3. The little window shows: **green** = charger connected, **orange** = charging,
    **orange goes out** = full (a *"Battery full"* text also arrives). Empty to full ≈ 5–6 hours.
 4. Unplug, clip back onto the standing horse, wait for **"Foal alarm ARMED"** again.
