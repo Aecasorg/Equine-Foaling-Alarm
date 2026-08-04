@@ -45,6 +45,7 @@ const float DIVIDER_RATIO           = 2.0;     // (R1+R2)/R2; 2.0 for two equal 
 const float LOW_BATT_VOLTS          = 3.40;    // warn below this
 const float BATT_RECOVER_VOLTS      = 3.70;    // re-arm the warning once charged past this
 const long  HEARTBEAT_INTERVAL_SECS = 86400L;  // ~24 h (loop ticks ~1 s)
+const long  SMS_POLL_SECS           = 30;      // check the inbox for "status" texts every 30 s
 
 // ---- State ----
 boolean notConnected  = true;
@@ -71,6 +72,7 @@ int     lowBattStreak  = 0;     // consecutive low readings (rides out GSM-TX vo
 boolean lowBattWarned  = false;
 boolean wasOnCharger   = false; // edge-detect for charger connect/disconnect
 boolean fullAnnounced  = false; // one "battery full" SMS per charge session
+long    smsPollTimer   = 0;     // counts up to the next inbox check
 
 void gsmSetup() {
   int attempt = 0;
@@ -155,6 +157,32 @@ uint8_t pmicStatus() {
 }
 boolean onCharger()  { return (pmicStatus() & 0x04) != 0; }    // PG_STAT: external 5V present
 boolean chargeDone() { return (pmicStatus() & 0x30) == 0x30; } // CHRG_STAT 11 = charge complete
+
+// Reply to a texted "status" (case-insensitive) with a status report, sent ONLY
+// to the number that asked - not the alert list. Every other inbound SMS is read
+// and discarded so the modem's message store can't fill up over a season of
+// network/marketing texts.
+void checkInbox() {
+  while (sms.available()) {
+    char from[20];
+    sms.remoteNumber(from, 20);
+    String body = "";
+    int c;
+    while ((c = sms.read()) != -1) body += (char)c;
+    sms.flush();                       // delete from modem storage either way
+    body.trim();
+    body.toLowerCase();
+    if (body.startsWith("status")) {
+      float vbat = readBatteryVolts();
+      String state = onCharger() ? (chargeDone() ? "on charger, battery full" : "charging")
+                                 : (armed ? "armed" : "arming");
+      sms.beginSMS(from);
+      sms.print((String("Foal alarm status: ") + state + ". Batt " + batteryPercent(vbat)
+                 + "% (" + String(vbat, 2) + "V). Sig " + signalStr()).c_str());
+      sms.endSMS();
+    }
+  }
+}
 
 // Sample the IMU for ~1 second. Returns PEAK movement (deg/s) and updates the
 // global avgX/Y/Z gravity vector. Also provides the loop's 1-second tick.
@@ -382,5 +410,12 @@ void loop() {
   if (heartbeatTimer >= HEARTBEAT_INTERVAL_SECS) {
     heartbeatTimer = 0;
     sendSMS((String("Foal alarm OK (") + (armed ? "armed" : "NOT armed") + "). Batt " + batteryPercent(vbat) + "% (" + String(vbat, 2) + "V). Sig " + signalStr()).c_str());
+  }
+
+  // ---- Inbound SMS: answer "status" queries (reply only to the sender) ----
+  smsPollTimer++;
+  if (smsPollTimer >= SMS_POLL_SECS) {
+    smsPollTimer = 0;
+    checkInbox();
   }
 }

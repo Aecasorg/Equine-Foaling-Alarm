@@ -103,6 +103,8 @@ a shelf. Wait for the ARMED text before walking away.
 - Flat ≥3 s / upright / repeat ×3 → EARLY WARNING SMS.
 - Plug the charger in → "Charger connected", alarms dormant; unplug → re-arms after
   a fresh settle.
+- Text "status" to the SIM from a phone NOT in the alert list → within ~1 min the
+  status reply lands ONLY on that phone.
 
 **Main tuning dials:** `MOTION_THRESHOLD` (30 °/s) and `ACTIVE_SECS_LABOUR` (8 s) —
 raise if jumpy, lower if deaf. `FLAT_ANGLE_DEG` (60°) for flat-detection margin,
@@ -127,6 +129,7 @@ Same diagram as update 1. Drain ~20 µA, negligible.
 | `LOW BATTERY 3.38V - charge foal alarm` | sustained reading < 3.40 V; re-arms after charging past 3.70 V |
 | `Charger connected. Batt 42%` | external 5 V detected — posture alarms suppressed while on charge |
 | `Battery full - foal alarm ready` | charger present and the BQ24195 reports charge complete |
+| `Foal alarm status: armed. Batt 78% (3.90V). Sig 12/31` | reply to any SMS starting with "status" (case-insensitive) — sent **only to the asking number**; inbox is polled every ~30 s, so allow up to a minute; all other inbound texts are discarded (keeps the modem's message store from filling) |
 
 **Calibration:** compare the boot SMS voltage against a multimeter on the battery and
 nudge `DIVIDER_RATIO` (2.0 nominal) until they agree. **Done 30 Jul 2026:** off-charger,
