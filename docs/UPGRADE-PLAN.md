@@ -367,6 +367,21 @@ pressure a path onto the coax head. Refined tests:
 Field experience 2026: the antenna coax / u.FL zone remains the device's weak
 point under shipping + horse vibration ("interference" recurred at the farm).
 
+**Field report, Aug 2026:** armed on the horse at the farm (Sig 14/31 — farm
+coverage confirmed good), then went silent; found next day pulled off the
+headcollar (herd mate suspected) after a night on the ground. Still worked
+lid-open in the garden (Sig 18/31) but not lid-on → the known coax/u.FL
+mechanical fault, re-triggered by the pull-off/impact (wires were never
+anchored). Consequences: (a) the keeper strap through the belt clip is now
+REQUIRED, not suggested; (b) the missing-heartbeat dead-man signal worked —
+that's what prompted the check.
+
+- **Fall-off detection** (new, field-driven): re-purpose the disabled backstop
+  tier — a fallen-off box reads as "flat + motionless for hours", which no
+  napping mare sustains. Threshold 60–90 min, message
+  "Device may have come off the horse - check it" (distinct from the old
+  CHECK MARE text). One constant + one string.
+
 - **Antenna robustness package** (the structural fix): u.FL→SMA bulkhead pigtail
   through the box wall + rigid external stub antenna. Seat the u.FL once and
   glue-stake it; bulkhead is strain-relieved and sealed. Interim measures that
