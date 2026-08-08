@@ -362,6 +362,27 @@ pressure a path onto the coax head. Refined tests:
 | On/off switch | ≥3 A rated, sealed/rubber boot preferred | 1 | ~£2–3 |
 | Belt clips | spring clip, box-to-headcollar quick release ([eBay 334736377513](https://www.ebay.co.uk/itm/334736377513)) | — | ✅ bought |
 
+## Next season (2027) improvements
+
+Field experience 2026: the antenna coax / u.FL zone remains the device's weak
+point under shipping + horse vibration ("interference" recurred at the farm).
+
+- **Antenna robustness package** (the structural fix): u.FL→SMA bulkhead pigtail
+  through the box wall + rigid external stub antenna. Seat the u.FL once and
+  glue-stake it; bulkhead is strain-relieved and sealed. Interim measures that
+  should happen at the next box-opening regardless: anchor the red DC pair to
+  the far wall, glue-stake the u.FL + coax, twist the DC pair (kills its loop
+  area). NOT foil wrap — coax is already shielded; floating foil near the
+  element/feed detunes it further.
+- **`status` reply gains tilt telemetry**: when armed, append the live angle
+  from reference, e.g. `Tilt 12deg (flat >60)`; while arming, append settling
+  progress, e.g. `settling 45/120s`. Makes remote diagnosis of arming/flat
+  detection possible.
+- **Remote re-arm command**: text `rearm` → device disarms and starts a fresh
+  settling cycle (same path as unplugging the charger), confirms with
+  "Re-arming - will text ARMED when settled". Restrict this command to the two
+  alert-list numbers (unlike `status`, it changes device state).
+
 ## Parked ideas (not scheduled)
 
 - Charging-status SMS ("plugged in" / "battery full") via the `Arduino_PMIC` library.
